@@ -1,2 +1,8 @@
 server:
   port: 9998
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hxy
+    username: root
+    password: root
