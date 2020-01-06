@@ -16,7 +16,7 @@ public class BizCommand extends HystrixCommand<String> {
 
     @Override
     protected String run() {
-        log.info("current thread: {}", Thread.currentThread().getName());
+        log.info("current thread: {}, call cnt: {}", Thread.currentThread().getName(), CNT.get());
         final int errorCnt = 3;
         if (CNT.incrementAndGet() < errorCnt) {
             throw new RuntimeException("error occur");
