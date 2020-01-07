@@ -69,6 +69,7 @@ public class SingleThreadReactor {
         public void run() {
             try {
                 SocketChannel socketChannel = serverSocketChannel.accept();
+                socketChannel.configureBlocking(false);
                 SelectionKey selectionKey = socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 selectionKey.attach(new Handler());
             } catch (IOException e) {
