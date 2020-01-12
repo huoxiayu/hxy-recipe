@@ -1,5 +1,6 @@
 package com.hxy.recipe.netty.start;
 
+import com.hxy.recipe.util.Utils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -25,7 +26,7 @@ public class EchoClient {
                         }
                     });
 
-            ChannelFuture f = bootstrap.connect("localhost", 8090).sync();
+            ChannelFuture f = bootstrap.connect("localhost", Utils.PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             eventLoopGroup.shutdownGracefully();

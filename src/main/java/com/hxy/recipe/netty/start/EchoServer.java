@@ -1,5 +1,6 @@
 package com.hxy.recipe.netty.start;
 
+import com.hxy.recipe.util.Utils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -27,7 +28,7 @@ public class EchoServer {
                         }
                     });
 
-            ChannelFuture f = serverBootstrap.bind(8090).sync();
+            ChannelFuture f = serverBootstrap.bind(Utils.PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             eventLoopGroup.shutdownGracefully();
