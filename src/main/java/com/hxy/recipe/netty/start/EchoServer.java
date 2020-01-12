@@ -14,10 +14,11 @@ import io.netty.handler.logging.LoggingHandler;
 public class EchoServer {
 
     public static void main(String[] args) throws InterruptedException {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
-            serverBootstrap.group(eventLoopGroup)
+            serverBootstrap.group(bossGroup, workGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
@@ -31,7 +32,8 @@ public class EchoServer {
             ChannelFuture f = serverBootstrap.bind(Utils.PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
-            eventLoopGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            workGroup.shutdownGracefully();
         }
     }
 

@@ -1,10 +1,9 @@
 package com.hxy.recipe.netty.start;
 
+import com.hxy.recipe.util.Utils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.util.concurrent.TimeUnit;
 
 @ChannelHandler.Sharable
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
@@ -16,12 +15,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        try {
-            TimeUnit.SECONDS.sleep(5L);
-        } catch (InterruptedException ignored) {
-
-        }
-
+        Utils.sleepInMillis(10L);
         ctx.flush();
     }
 

@@ -3,7 +3,10 @@ package com.hxy.recipe.io.bio;
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -96,13 +99,13 @@ public class ThreadPerConnectionServer {
 
     public static void main(String[] args) throws IOException {
         // sumCost: 5854 seconds, totalCost: 1874 milliseconds
-        new Thread(new Server(Server.Strategy.single_thread, Utils.PORT)).start();
+        new Server(Server.Strategy.single_thread, Utils.PORT).run();
 
         // sumCost: 3026 seconds, totalCost: 1174 milliseconds
-        // new Thread(new Server(Server.Strategy.new_thread, Utils.PORT)).start();
+        // new Server(Server.Strategy.new_thread, Utils.PORT).run();
 
         // sumCost: 1505 seconds, totalCost: 535 milliseconds
-        // new Thread(new Server(Server.Strategy.thread_pool, Utils.PORT)).start();
+        // new Server(Server.Strategy.thread_pool, Utils.PORT).run();
     }
 
 }

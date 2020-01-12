@@ -1,4 +1,4 @@
-package com.hxy.recipe.io;
+package com.hxy.recipe.io.client;
 
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;

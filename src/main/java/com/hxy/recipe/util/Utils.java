@@ -3,24 +3,20 @@ package com.hxy.recipe.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
 
     public static final int PORT = 8888;
+    public static final int CORES = Runtime.getRuntime().availableProcessors();
 
-    private static final int CORES = Runtime.getRuntime().availableProcessors();
-    private static final Map<String, ExecutorService> nameExecutorServiceMap = new HashMap<>();
+    private static final Map<String, ExecutorService> nameExecutorServiceMap = new ConcurrentHashMap<>();
 
     public static ExecutorService newExecutors(String name) {
-        return nameExecutorServiceMap.computeIfAbsent(name, k -> Executors.newFixedThreadPool(CORES, newThreadFactory(name)));
+        return nameExecutorServiceMap.computeIfAbsent(name, k -> Executors.newFixedThreadPool(CORES * 2, newThreadFactory(name)));
     }
 
     public static ThreadFactory newThreadFactory(String prefix) {
