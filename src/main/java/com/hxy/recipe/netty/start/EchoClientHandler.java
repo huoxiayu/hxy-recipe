@@ -1,6 +1,5 @@
 package com.hxy.recipe.netty.start;
 
-import com.hxy.recipe.util.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,7 +21,6 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        Utils.sleepInMillis(50L);
         ctx.flush();
     }
 

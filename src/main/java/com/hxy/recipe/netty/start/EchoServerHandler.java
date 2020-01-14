@@ -15,7 +15,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        Utils.sleepInMillis(10L);
+        Utils.sleepInMillis(5000L);
         ctx.flush();
     }
 
