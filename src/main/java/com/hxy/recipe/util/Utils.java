@@ -4,7 +4,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,6 +53,10 @@ public final class Utils {
             }
         } catch (InterruptedException ignored) {
         }
+    }
+
+    public static void randomSleepInMillis() {
+        sleepInMillis(ThreadLocalRandom.current().nextInt(1, 100));
     }
 
 }
