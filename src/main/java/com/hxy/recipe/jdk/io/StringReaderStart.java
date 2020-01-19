@@ -1,4 +1,4 @@
-package com.hxy.recipe.jdk;
+package com.hxy.recipe.jdk.io;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 @Slf4j
-public class MemoryReadStart {
+public class StringReaderStart {
 
     public static void main(String[] args) {
         try (StringReader sr = new StringReader("hello world")) {
