@@ -1,0 +1,26 @@
+{
+	"type": "record",
+	"name": "User",
+	"namespace": "com.hxy.avro",
+	"fields": [
+		{
+			"name": "name",
+			"type": "string"
+		},
+		{
+			"name": "age",
+			"type": [
+				"int",
+				"null"
+			]
+		},
+		{
+			"name": "idCard",
+			"type": [
+				"string",
+				"null"
+			]
+		}
+	]
+}
+
