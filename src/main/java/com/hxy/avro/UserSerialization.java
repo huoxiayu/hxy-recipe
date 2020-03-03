@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 public class UserSerialization {
 
-    private static final String TARGET_PATH = "avro.store";
+    private static final String TARGET_PATH = "avro.data";
 
     public static void main(String[] args) throws IOException {
         new UserSerialization().serialize();
