@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.hxy.rpc.grpc.model";
+option java_outer_classname = "CompositeProto";
+option objc_class_prefix = "HLW";
+
+import "hello.proto";
+
+package composite;
+
+enum Gender {
+    MAN = 0;
+    WOMAN = 1;
+}
+
+message CompositeHello {
+    string msg = 1;
+    repeated string msgList = 2;
+    int32 id = 3;
+    hello.HelloRequest helloRequest = 4;
+    bool skip = 5;
+    message Info {
+        string name = 1;
+        int64 timestamp = 2;
+    }
+    repeated Info InfoList = 6;
+    Gender gender = 7;
+    map<string, string> strMap = 8;
+}
+
