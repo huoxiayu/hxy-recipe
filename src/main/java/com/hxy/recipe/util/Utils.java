@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,8 @@ public final class Utils {
 
     public static final int PORT = 8888;
     public static final int CORES = Runtime.getRuntime().availableProcessors();
+
+    public static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(CORES, newThreadFactory("scheduler"));
 
     private static final Map<String, ExecutorService> nameExecutorServiceMap = new ConcurrentHashMap<>();
 
