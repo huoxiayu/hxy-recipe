@@ -16,7 +16,7 @@ public class HystrixStart {
         log.info("main thread: {}", Thread.currentThread().getName());
         HystrixCommand.Setter setter = HystrixCommand.Setter
             .withGroupKey(HystrixCommandGroupKey.Factory.asKey("biz-command"))
-            .andCommandKey(HystrixCommandKey.Factory.asKey("run"))
+            .andCommandKey(HystrixCommandKey.Factory.asKey("singleRun"))
             .andCommandPropertiesDefaults(
                 HystrixCommandProperties.Setter().withCircuitBreakerEnabled(true)
                     .withCircuitBreakerRequestVolumeThreshold(1)

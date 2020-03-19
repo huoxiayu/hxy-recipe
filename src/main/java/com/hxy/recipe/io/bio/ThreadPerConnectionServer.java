@@ -102,10 +102,10 @@ public class ThreadPerConnectionServer {
         new Server(Server.Strategy.single_thread, Utils.PORT).run();
 
         // sumCost: 3026 seconds, totalCost: 1174 milliseconds
-        // new Server(Server.Strategy.new_thread, Utils.PORT).run();
+        // new Server(Server.Strategy.new_thread, Utils.PORT).singleRun();
 
         // sumCost: 1505 seconds, totalCost: 535 milliseconds
-        // new Server(Server.Strategy.thread_pool, Utils.PORT).run();
+        // new Server(Server.Strategy.thread_pool, Utils.PORT).singleRun();
     }
 
 }
