@@ -22,7 +22,9 @@ public final class BenchmarkUtil {
     public static long multiRun(Runnable runnable, int threadNum) {
         List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < threadNum; i++) {
-            threads.add(new Thread(runnable));
+            Thread thread = new Thread(runnable);
+            thread.setDaemon(true);
+            threads.add(thread);
         }
         long start = System.currentTimeMillis();
         for (Thread thread : threads) {
