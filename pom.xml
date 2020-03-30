@@ -139,6 +139,12 @@
             <version>0.9.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>RoaringBitmap</artifactId>
+            <version>0.8.9</version>
+        </dependency>
+
         <!-- proto-buffer -->
         <dependency>
             <groupId>io.grpc</groupId>
