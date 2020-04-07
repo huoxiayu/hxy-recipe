@@ -23,8 +23,8 @@ public final class Utils {
 
     private static final Map<String, ExecutorService> nameExecutorServiceMap = new ConcurrentHashMap<>();
 
-    public static ExecutorService newExecutors(String name) {
-        return nameExecutorServiceMap.computeIfAbsent(name, k -> Executors.newFixedThreadPool(CORES * 2, newThreadFactory(name)));
+    public static ExecutorService newExecutors(String prefix) {
+        return nameExecutorServiceMap.computeIfAbsent(prefix, k -> Executors.newFixedThreadPool(CORES * 2, newThreadFactory(prefix)));
     }
 
     public static ThreadFactory newThreadFactory(String prefix) {
