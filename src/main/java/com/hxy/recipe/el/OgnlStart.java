@@ -1,10 +1,11 @@
 package com.hxy.recipe.el;
 
+import com.hxy.recipe.util.BenchmarkUtil;
+import com.hxy.recipe.util.RunnableUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import ognl.Ognl;
-import ognl.OgnlException;
 
 import java.util.List;
 
@@ -25,10 +26,38 @@ public class OgnlStart {
         private int value;
     }
 
-    public static void main(String[] args) throws OgnlException {
-        Basket basket = new Basket("red", List.of(new Item("p1", 1), new Item("p2", 2)));
-        log.info("itemList[0].value => {}", Ognl.getValue(Ognl.parseExpression("itemList[0].value"), basket));
-        log.info("itemList[1].getProperty() => {}", Ognl.getValue(Ognl.parseExpression("itemList[1].getProperty()"), basket));
+    public static void main(String[] args) throws Exception {
+        Basket basket = new Basket("red", List.of(
+            new Item("p1", 1),
+            new Item("p2", 2))
+        );
+        String expression1 = "itemList[0].value";
+        log.info("{} => {}", expression1, Ognl.getValue(Ognl.parseExpression(expression1), basket));
+
+        String expression2 = "itemList[1].getProperty()";
+        log.info("{} => {}", expression2, Ognl.getValue(Ognl.parseExpression(expression2), basket));
+
+        long parseEveryTime = BenchmarkUtil.singleRun(
+            RunnableUtil.loopExceptionRunnable(
+                () -> Ognl.getValue(Ognl.parseExpression(expression1), basket)
+            )
+        );
+        log.info("normal cost {} millis", parseEveryTime);
+
+        Object preparse = Ognl.parseExpression(expression1);
+        long parsedCost = BenchmarkUtil.singleRun(
+            RunnableUtil.loopExceptionRunnable(
+                () -> Ognl.getValue(preparse, basket)
+            )
+        );
+        log.info("preparse cost {} millis", parsedCost);
+
+        long oriCost = BenchmarkUtil.singleRun(
+            RunnableUtil.loopExceptionRunnable(
+                (() -> basket.getItemList().get(0).getValue())
+            )
+        );
+        log.info("ori cost {} millis", oriCost);
     }
 
 }
