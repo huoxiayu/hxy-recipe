@@ -37,6 +37,15 @@ public class OgnlStart {
         String expression2 = "itemList[1].getProperty()";
         log.info("{} => {}", expression2, Ognl.getValue(Ognl.parseExpression(expression2), basket));
 
+        String expression3 = "@java.lang.Math@random()";
+        log.info("{} => {}", expression3, Ognl.getValue(Ognl.parseExpression(expression3), null));
+
+        String expression4 = "@java.lang.Math@random() < 0.5";
+        log.info("{} => {}", expression4, Ognl.getValue(Ognl.parseExpression(expression4), null));
+
+        String expression5 = "@java.util.concurrent.ThreadLocalRandom@current().nextDouble() > 0.5";
+        log.info("{} => {}", expression5, Ognl.getValue(Ognl.parseExpression(expression5), null));
+
         long parseEveryTime = BenchmarkUtil.singleRun(
             RunnableUtil.loopExceptionRunnable(
                 () -> Ognl.getValue(Ognl.parseExpression(expression1), basket)
