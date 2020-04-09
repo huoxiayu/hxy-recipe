@@ -1,4 +1,4 @@
-package com.hxy.recipe.juc.concurrent;
+package com.hxy.recipe.jdk.juc.concurrent;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 import lombok.extern.slf4j.Slf4j;

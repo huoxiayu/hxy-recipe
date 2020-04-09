@@ -1,4 +1,4 @@
-package com.hxy.recipe.juc.atomic;
+package com.hxy.recipe.jdk.juc.atomic;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 import com.hxy.recipe.util.RunnableUtil;
