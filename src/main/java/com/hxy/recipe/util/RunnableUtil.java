@@ -12,14 +12,16 @@ public final class RunnableUtil {
         void run() throws Exception;
     }
 
+    public static void runWithoutEx(ExceptionRunnable exceptionRunnable) {
+        try {
+            exceptionRunnable.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static Runnable deException(ExceptionRunnable exceptionRunnable) {
-        return () -> {
-            try {
-                exceptionRunnable.run();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
+        return () -> runWithoutEx(exceptionRunnable);
     }
 
     public static Runnable loopExceptionRunnable(ExceptionRunnable exceptionRunnable) {
