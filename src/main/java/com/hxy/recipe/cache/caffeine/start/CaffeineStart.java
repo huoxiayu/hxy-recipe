@@ -35,7 +35,7 @@ public class CaffeineStart {
         log.info("thirdResult: {}", thirdResult);
         stopWatch.stop();
 
-        Utils.sleep(10L);
+        Utils.sleepInSeconds(10L);
 
         // expireAfterWrite=10s
         stopWatch.start("wait 10s for cache expire");
@@ -51,7 +51,7 @@ public class CaffeineStart {
         log.info("stopWatch.prettyPrint(): {}", stopWatch.prettyPrint());
 
         // wait for expire
-        Utils.sleep(10L);
+        Utils.sleepInSeconds(10L);
 
         // initialCapacity=10,maximumSize=10
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -60,7 +60,7 @@ public class CaffeineStart {
             executorService.execute(() -> fiveSecondsSlowComputing.compute(idx));
         }
 
-        Utils.sleep(5L);
+        Utils.sleepInSeconds(5L);
 
         for (int i = 0; i < 15; i++) {
             stopWatch.start();

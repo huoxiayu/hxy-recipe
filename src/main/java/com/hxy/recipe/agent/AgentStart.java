@@ -16,7 +16,7 @@ public class AgentStart {
         Foo foo = new Foo();
         do {
             foo.foo();
-            Utils.sleep(2L);
+            Utils.sleepInSeconds(2L);
         } while (true);
     }
 

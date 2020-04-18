@@ -1,4 +1,4 @@
-package com.hxy.recipe.bytecode;
+package com.hxy.recipe.lambda;
 
 public class LambdaStart {
 
@@ -8,26 +8,26 @@ public class LambdaStart {
 
         /**
          * lambda will generate extra static method 'private static void lambda$main$0()'
-         * public class com.hxy.recipe.bytecode.LambdaStart {
-         *   public com.hxy.recipe.bytecode.LambdaStart();
+         * public class com.hxy.recipe.lambda.LambdaStart {
+         *   public com.hxy.recipe.lambda.LambdaStart();
          *   public static void main(java.lang.String[]);
          *   private static void print();
          *   private static void run(java.lang.Runnable);
          *   private static void lambda$main$0();
          * }
          */
-        // run(() -> print());
+        run(() -> print());
 
         /**
          * method reference will not
-         * public class com.hxy.recipe.bytecode.LambdaStart {
-         *   public com.hxy.recipe.bytecode.LambdaStart();
+         * public class com.hxy.recipe.lambda.LambdaStart {
+         *   public com.hxy.recipe.lambda.LambdaStart();
          *   public static void main(java.lang.String[]);
          *   private static void print();
          *   private static void run(java.lang.Runnable);
          * }
          */
-        run(LambdaStart::print);
+        // run(LambdaStart::print);
     }
 
     private static void print() {

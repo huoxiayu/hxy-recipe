@@ -13,7 +13,7 @@ public class CompletableFutureStart {
 
     public static void main(String[] args) {
         Supplier<String> slowCall = () -> {
-            Utils.sleep(10L);
+            Utils.sleepInSeconds(10L);
             return UUID.randomUUID().toString();
         };
 
@@ -27,7 +27,7 @@ public class CompletableFutureStart {
         } catch (Exception ex) {
             log.error("error: {}", ex);
 
-            Utils.sleep(10L);
+            Utils.sleepInSeconds(10L);
 
             log.info("f1 again");
             try {

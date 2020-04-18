@@ -142,7 +142,7 @@ public class RxStart {
             .map(String::valueOf)
             .subscribe(subscriber);
 
-        Utils.sleep(5L);
+        Utils.sleepInSeconds(5L);
 
         subscriber.unsubscribe();
     }
