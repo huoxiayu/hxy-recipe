@@ -24,6 +24,7 @@
         <protobuf.version>3.5.1</protobuf.version>
         <avro.version>1.9.2</avro.version>
         <guava.version>19.0</guava.version>
+        <collections.version>4.0</collections.version>
     </properties>
 
     <dependencyManagement>
@@ -125,6 +126,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
             <version>2.5.1</version>
@@ -165,6 +171,12 @@
             <groupId>org.roaringbitmap</groupId>
             <artifactId>RoaringBitmap</artifactId>
             <version>0.8.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${collections.version}</version>
         </dependency>
 
         <!-- proto-buffer -->
