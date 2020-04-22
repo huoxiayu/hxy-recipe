@@ -14,7 +14,7 @@ object PingPongActorStart {
 
 		ping ! Start
 
-		Utils.sleep(2L)
+		Utils.sleepInSeconds(2L)
 		system.terminate()
 	}
 

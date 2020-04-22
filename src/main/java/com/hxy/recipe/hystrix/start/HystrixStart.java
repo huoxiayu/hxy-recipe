@@ -32,7 +32,7 @@ public class HystrixStart {
             String result = bizCommand.execute();
             log.info("result {} for {} times", result, i);
 
-            Utils.sleep(1L);
+            Utils.sleepInSeconds(1L);
         }
 
     }

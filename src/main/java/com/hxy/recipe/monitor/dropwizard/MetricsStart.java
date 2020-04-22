@@ -27,7 +27,7 @@ public class MetricsStart {
 
         timer(registry);
 
-        Utils.sleep(5L);
+        Utils.sleepInSeconds(5L);
     }
 
     private static void gauge(MetricRegistry registry) {

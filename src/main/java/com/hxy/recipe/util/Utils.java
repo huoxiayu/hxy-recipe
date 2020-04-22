@@ -57,13 +57,12 @@ public final class Utils {
         }
     }
 
-    public static void sleep(long timeInSeconds) {
-        try {
-            if (timeInSeconds > 0) {
-                TimeUnit.SECONDS.sleep(timeInSeconds);
-            }
-        } catch (InterruptedException ignored) {
-        }
+    public static void sleepInSeconds(long timeInSeconds) {
+        sleepInMillis(timeInSeconds * 1000L);
+    }
+
+    public static void sleepInMinutes(long timeInMinutes) {
+        sleepInSeconds(timeInMinutes * 60L);
     }
 
     public static void randomSleepInMillis() {

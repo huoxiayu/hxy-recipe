@@ -19,7 +19,7 @@ public class ThreadPoolStart {
 
         // print normally
         scheduledExecutorService.execute(() -> {
-            Utils.sleep(1L);
+            Utils.sleepInSeconds(1L);
             log.info("execute before shutdown");
         });
 
@@ -28,7 +28,7 @@ public class ThreadPoolStart {
 
         // no error and no print
         scheduledExecutorService.execute(() -> {
-            Utils.sleep(1L);
+            Utils.sleepInSeconds(1L);
             log.info("after shutdown");
         });
 
