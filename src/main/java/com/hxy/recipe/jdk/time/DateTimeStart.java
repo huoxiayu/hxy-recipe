@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -30,6 +31,9 @@ public class DateTimeStart {
         log.info("formatDay is: {}", formatDay);
         log.info("formatDay is: {}", Integer.parseInt(formatDay));
 
+        LocalDate localDate = LocalDate.now();
+        log.info("localDate is: {}", localDate);
+        log.info("localDate.atStartOfDay: {}", localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli());
     }
 
 }
