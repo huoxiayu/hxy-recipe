@@ -1,13 +1,14 @@
 package com.hxy.recipe.spark
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.functions._
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.sql.types.{IntegerType, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
 
 object SparkRunner {
 
-	val schema = new StructType().add("id", IntegerType, nullable = false)
+	val schema: StructType = new StructType().add("id", IntegerType, nullable = false)
 
 	def toRow(i: Int) = Row(i)
 
@@ -29,15 +30,56 @@ object SparkRunner {
 		val df1 = Seq((1, "a", "x"), (1, "b", "y")).toDF("triggerId", "column_1", "extra")
 		val df2 = Seq((1, "c", "x"), (1, "d", "z")).toDF("triggerId", "column_2", "extra")
 
-		println("left outer")
-		df1.join(df2, Seq("extra"), "leftouter").show
+		val vectors = sparkContext.textFile("target/classes/vector")
+			.map(_.split("\t"))
+			.map(_.map(_.toDouble))
+			.map(Vectors.dense)
 
-		println("left anti")
-		df1.join(df2, Seq("extra"), "leftanti").show
+		val stat = Statistics.colStats(vectors)
+		println(stat)
+		// println(stat.normL1)	// L1范数 绝对值之和
+		// println(stat.normL2)	// L2范数 平方和的平方根
+		// println(stat.variance)
+		// println(stat.numNonzeros)
+		// println(stat.count)
+		// println(stat.max)
+		// println(stat.min)
+		// println(stat.mean)
+		val corr1 = Statistics.corr(vectors, "pearson")
+		println(corr1)
+		val corr2 = Statistics.corr(vectors, "spearman")
+		println(corr2)
 
-		println("left semi")
-		df1.join(df2, Seq("extra"), "leftsemi").show
+		// 卡方检验
+		val vector_1 = Vectors.dense(43.0, 9.0)
+		val vector_2 = Vectors.dense(44.0, 4.0)
+		val chiSqTestResult = Statistics.chiSqTest(vector_1, vector_2)
+		println(chiSqTestResult)
 
+		/**
+		  * Chi squared test summary:
+		  * method: pearson
+		  * degrees of freedom = 1 	自由度
+		  * statistic = 5.482517482517483  值
+		  * pValue = 0.01920757707591003  概率
+		  * Strong presumption against null hypothesis: observed follows the same distribution as expected..
+		  */
+
+		// rdd_1_to_10.foreach(println)
+		// rdd_1_to_10.coalesce(5).foreach(println)
+		// rdd_1_to_10.repartition(5).foreach(println)
+		// rdd_pair_1_to_5.zipWithIndex().foreach(println)
+		// rdd_1_to_10.subtract(rdd_1_to_5).foreach(println)
+		// sparkContext.parallelize(1 to 1000000).randomSplit(Array(1, 1, 1, 1)).foreach(rdd => println(rdd.count))
+		// rdd_pair_1_to_10.join(rdd_pair_1_to_5).foreach(println)
+		// rdd_pair_1_to_10.leftOuterJoin(rdd_pair_1_to_5).foreach(println)
+		// sparkContext.textFile("target/classes/input").foreach(println)
+		// println("left outer")
+		// df1.join(df2, Seq("extra"), "leftouter").show
+		// println("left anti")
+		// df1.join(df2, Seq("extra"), "leftanti").show
+		// println("left semi")
+		// df1.join(df2, Seq("extra"), "leftsemi").show
 		// rdd_1_to_10.map(_ * 2).foreach(println)
 		// rdd_1_to_10.mapPartitions(it => it.map(_ + 10)).foreach(println)
 		// rdd_1_to_10.sample(withReplacement = false, 0.5).foreach(println)
@@ -45,7 +87,16 @@ object SparkRunner {
 		// rdd_1_to_10.map(i => (i % 2 == 0, i)).groupByKey().foreach(i => println(i._1 + ":" + i._2))
 		// rdd_1_to_10.map(i => (i % 2 == 0, i)).reduceByKey(_ + _).foreach(println)
 		// rdd_1_to_10.map(i => (i % 2 == 0, i)).aggregateByKey(0)((k, v) => k + v, _ + _).foreach(println)
+		// rdd_1_to_10.map(i => (i % 2 == 0, i)).aggregateByKey((0, 0))((acc, num) => (acc._1 + num, acc._2 + 1), (pair1, pair2) => (pair1._1 + pair2._1, pair1._2 + pair2._2)).foreach(println)
+		// rdd_1_to_10.map(i => (i % 2 == 0, i)).combineByKey(
+		// 	(v: Int) => new AtomicInteger(v),
+		// 	(merge: AtomicInteger, v: Int) => new AtomicInteger(merge.get() + v),
+		// 	(merge1: AtomicInteger, merge2: AtomicInteger) => new AtomicInteger(merge1.get() + merge2.get()),
+		// 	2
+		// ).foreach(println)
+		// rdd_1_to_10.sortBy(i => i, ascending = false).foreach(println)
 		// rdd_1_to_10.map(i => (i, i % 2 == 0)).sortBy(_._1, ascending = false).foreach(println)
+		// rdd_1_to_10.map(i => (i, i % 2 == 0)).sortByKey(ascending = true).foreach(println)
 		// rdd_1_to_5.cartesian(rdd_1_to_10).foreach(println)
 		// val longAcc = sparkContext.longAccumulator("long-acc")
 		// sparkContext.parallelize(1 to 10000, 20).foreach(longAcc.add(_))
@@ -72,14 +123,13 @@ object SparkRunner {
 		// 	.select($"triggerId", $"column_1", $"column_2").cache
 		// df1_join_df2.show
 		// df1_join_df2.dropDuplicates(Seq("triggerId", "column_1")).show
-
-		val id_app_usage = Seq(
-			(1, Map("app1" -> 10, "app2" -> 5)),
-			(2, Map("app1" -> 5, "app3" -> 1))
-		).toDF("id", "appUsage")
-		id_app_usage.show
-		id_app_usage.select($"id", explode($"appUsage")).show // key value
-		id_app_usage.select($"id", explode($"appUsage") as Seq("app", "useTime")).show // app useTime
+		// val id_app_usage = Seq(
+		// 	(1, Map("app1" -> 10, "app2" -> 5)),
+		// 	(2, Map("app1" -> 5, "app3" -> 1))
+		// ).toDF("id", "appUsage")
+		// id_app_usage.show
+		// id_app_usage.select($"id", explode($"appUsage")).show // key value
+		// id_app_usage.select($"id", explode($"appUsage") as Seq("app", "useTime")).show // app useTime
 
 		spark.close()
 	}
