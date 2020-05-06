@@ -8,12 +8,18 @@ import org.apache.spark.sql.functions._
 
 import scala.collection.JavaConverters._
 
+
 object SparkSqlRunner {
 
 	val personList = Seq(
 		Person(16, "hxy-like-three-games", Seq("lol", "dnf", "king-glory").asJava, Hobby("blue", "iron-man")),
 		Person(16, "hxy-only-play-dnf", Seq("dnf").asJava, Hobby("red")),
 		Person(18, "old-hxy-do-not-like-game", Seq().asJava, Hobby())
+	)
+
+	val heroList = Seq(
+		Hero("jinx", Some("lulu"), Some(100)),
+		Hero("LeeSin", None, None)
 	)
 
 	val gson = new Gson()
@@ -26,6 +32,11 @@ object SparkSqlRunner {
 		val spark = SparkSession.builder().config(sparkConf).getOrCreate()
 		import spark.implicits._
 
+		val heroDF = spark.sparkContext.parallelize(heroList).toDF()
+		// filter None atomically
+		heroDF.filter($"pet" =!= "dzx").show
+		heroDF.filter($"mp" >= 50).show
+
 		val df = spark.read.json(spark.createDataset(spark.sparkContext.parallelize(jsonList)))
 		df.show
 
@@ -33,7 +44,7 @@ object SparkSqlRunner {
 		explodedDf.printSchema
 		explodedDf.show
 
-		Utils.sleepInMinutes(30L)
+		Utils.sleepInMinutes(1L)
 
 		spark.close()
 	}
@@ -51,3 +62,9 @@ case class Person(
 					 registerGameList: java.util.List[String],
 					 hobby: Hobby
 				 )
+
+case class Hero(
+				   name: String,
+				   pet: Option[String],
+				   mp: Option[Int]
+			   )

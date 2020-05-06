@@ -8,7 +8,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
-public class DateTimeStart {
+public class TimeStart {
 
     public static void main(String[] args) {
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -34,6 +34,7 @@ public class DateTimeStart {
         LocalDate localDate = LocalDate.now();
         log.info("localDate is: {}", localDate);
         log.info("localDate.atStartOfDay: {}", localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli());
+
     }
 
 }
