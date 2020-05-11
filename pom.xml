@@ -47,10 +47,11 @@
             <version>${scala.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.scopt/scopt -->
         <dependency>
-            <groupId>org.json4s</groupId>
-            <artifactId>json4s-native_2.12</artifactId>
-            <version>3.6.7</version>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_2.11</artifactId>
+            <version>3.3.0</version>
         </dependency>
 
         <dependency>
