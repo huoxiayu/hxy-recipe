@@ -21,6 +21,10 @@ public final class Utils {
 
     public static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(CORES, newThreadFactory("scheduler"));
 
+    public static ScheduledExecutorService newSingleScheduledExecutors(String prefix) {
+        return Executors.newSingleThreadScheduledExecutor(newThreadFactory(prefix));
+    }
+
     private static final Map<String, ExecutorService> nameExecutorServiceMap = new ConcurrentHashMap<>();
 
     public static ExecutorService newSingleExecutors(String prefix) {
