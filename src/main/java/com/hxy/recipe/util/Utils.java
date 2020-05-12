@@ -52,6 +52,10 @@ public final class Utils {
         };
     }
 
+    public static void sleep() {
+        sleepInSeconds(60L);
+    }
+
     public static void sleepInMillis(long timeInMillis) {
         try {
             if (timeInMillis > 0L) {

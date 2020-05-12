@@ -1,6 +1,6 @@
 package com.hxy.recipe.spark
 
-import com.hxy.recipe.util.{JvmUtil, TestCaseUtil}
+import com.hxy.recipe.util.JvmUtil
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.Statistics
@@ -23,9 +23,6 @@ object SparkRunner {
 		val sparkContext = spark.sparkContext
 
 		import spark.implicits._
-
-		val roaringBitMap = sparkContext.parallelize(TestCaseUtil.roaringBitmap(1, 200000000).toArray, 20)
-		println(s"roaringBitMap.sum(): ${roaringBitMap.sum()}")
 
 		val rdd_1_to_10 = sparkContext.parallelize(1 to 10, 1)
 		val rdd_1_to_5 = sparkContext.parallelize(1 to 5, 1)
