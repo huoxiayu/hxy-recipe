@@ -53,7 +53,7 @@ public final class Utils {
     }
 
     public static void sleep() {
-        sleepInSeconds(60L);
+        sleepInSeconds(10L);
     }
 
     public static void sleepInMillis(long timeInMillis) {
