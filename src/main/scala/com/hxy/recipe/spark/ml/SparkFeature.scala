@@ -8,6 +8,150 @@ class SparkFeature(implicit spark: SparkSession) {
 
 	import spark.implicits._
 
+	def maxAbsScaler(): Unit = {
+		val data = Seq(
+			Vectors.dense(1, 1),
+			Vectors.dense(2, 2),
+			Vectors.dense(3, 3),
+			Vectors.dense(1, 2)
+		).map(Tuple1.apply).toDF("features")
+
+		val scaler = new MaxAbsScaler()
+			.setInputCol("features")
+			.setOutputCol("scaledFeatures")
+			.fit(data)
+
+		val scaledData = scaler.transform(data)
+		scaledData.show(false)
+	}
+
+	def minMaxScaler(): Unit = {
+		val data = Seq(
+			Vectors.dense(1, 1),
+			Vectors.dense(2, 2),
+			Vectors.dense(3, 3),
+			Vectors.dense(1, 2)
+		).map(Tuple1.apply).toDF("features")
+
+		val scaler = new MinMaxScaler()
+			.setInputCol("features")
+			.setOutputCol("scaledFeatures")
+			.fit(data)
+
+		val scaledData = scaler.transform(data)
+		scaledData.show(false)
+	}
+
+	def standardScaler(): Unit = {
+		val data = Seq(
+			Vectors.dense(1, 1),
+			Vectors.dense(2, 2),
+			Vectors.dense(3, 3),
+			Vectors.dense(1, 2)
+		).map(Tuple1.apply).toDF("features")
+
+		val scalerModel = new StandardScaler()
+			.setInputCol("features")
+			.setOutputCol("scaledFeatures")
+			.setWithStd(true)
+			.setWithMean(false)
+			.fit(data)
+
+		val scaledData = scalerModel.transform(data)
+		scaledData.show(false)
+	}
+
+	def normalizer(): Unit = {
+		val data = Seq(
+			Vectors.dense(1, 1),
+			Vectors.dense(2, 2),
+			Vectors.dense(3, 3),
+			Vectors.dense(1, 2)
+		).map(Tuple1.apply).toDF("features")
+
+		val normalizer = new Normalizer()
+			.setInputCol("features")
+			.setOutputCol("normFeatures")
+			.setP(1.0)
+
+		val l1NormData = normalizer.transform(data)
+		l1NormData.show(false)
+
+		val l2NormData = normalizer.transform(data, normalizer.p -> 2)
+		l2NormData.show(false)
+
+		val lInfNormData = normalizer.transform(data, normalizer.p -> Double.PositiveInfinity)
+		lInfNormData.show(false)
+	}
+
+	def polynomialExpansion(): Unit = {
+		val data = Seq(
+			Vectors.dense(-2.0, 2.3),
+			Vectors.dense(0.0, 0.0),
+			Vectors.dense(0.6, -1.1)
+		).map(Tuple1.apply).toDF("features")
+
+		data.show(false)
+
+		new PolynomialExpansion()
+			.setInputCol("features")
+			.setOutputCol("polyFeatures")
+			.setDegree(2) // (x, y) => (x, y, x * x, x * y, y * y)
+			.transform(data).show(false)
+	}
+
+	def pca(): Unit = {
+		val data = Seq(
+			Vectors.sparse(5, Seq((1, 1.0), (3, 7.0))),
+			Vectors.dense(2.0, 0.0, 3.0, 4.0, 5.0),
+			Vectors.dense(4.0, 0.0, 0.0, 6.0, 7.0)
+		).map(Tuple1.apply).toDF("features")
+		data.show(false)
+
+		val pca = new PCA()
+			.setInputCol("features")
+			.setOutputCol("pcaFeatures")
+			.setK(3)
+			.fit(data)
+		pca.transform(data).show(false)
+	}
+
+	def binarizer(): Unit = {
+		val data = Seq(0.1, 0.3, 0.5, 0.7, 0.9).toDF("value")
+		data.show
+
+		new Binarizer()
+			.setInputCol("value")
+			.setOutputCol("binary")
+			.setThreshold(0.5)
+			.transform(data)
+			.show
+	}
+
+	def ngram(): Unit = {
+		val labeledWords = Seq(
+			(0, Array("Hi", "I", "heard", "about", "Spark")),
+			(1, Array("I", "wish", "Java", "could", "use", "case", "classes")),
+			(2, Array("Logistic", "regression", "models", "are", "neat"))
+		).toDF("label", "words")
+		labeledWords.show(false)
+
+		val ngram = new NGram().setN(2).setInputCol("words").setOutputCol("ngram")
+		ngram.transform(labeledWords).show(false)
+	}
+
+	def removeStopWords(): Unit = {
+		val words = Seq(
+			"I heard about Spark and I love Spark",
+			"I wish Java could use case classes",
+			"Logistic regression models are neat"
+		).map(_.split(" ")).toDF("sentence")
+		words.show(false)
+
+		val stopWordsRemover = new StopWordsRemover().setInputCol("sentence").setOutputCol("filtered")
+		stopWordsRemover.transform(words).show(false)
+	}
+
 	// 特征提取
 	def tfIdf(): Unit = {
 		val sentences = Seq(

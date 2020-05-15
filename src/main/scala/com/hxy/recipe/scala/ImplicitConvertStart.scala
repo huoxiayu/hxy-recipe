@@ -3,7 +3,7 @@ package com.hxy.recipe.scala
 import com.hxy.recipe.common.Log
 
 import scala.collection.mutable.ArrayBuffer
-import scala.language.implicitConversions
+import scala.language.{implicitConversions, postfixOps}
 
 object ImplicitConvertStart extends Log {
 

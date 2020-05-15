@@ -33,10 +33,34 @@ object SparkSqlRunner extends Log {
 		val spark = SparkSession.builder().config(sparkConf).getOrCreate()
 		import spark.implicits._
 
+		// default column name: _1 _2
+		val sexGameTimeDataFrame = Seq(
+			("boy", "dnf", 1),
+			("boy", "dnf", 2),
+			("boy", "dnf", 3),
+			("girl", "dnf", 1),
+			("boy", "king-glory", 1),
+			("boy", "king-glory", 2),
+			("boy", "king-glory", 2),
+			("girl", "king-glory", 1),
+			("girl", "king-glory", 2),
+			("girl", "king-glory", 3)
+		).toDF
+
+		info("sexGameTimeDataFrame")
+		sexGameTimeDataFrame.show
+
+		info("sexGameTimeDataFrame groupBy")
+		sexGameTimeDataFrame.groupBy($"_1", $"_2")
+			.agg(collect_list($"_3").as("times"))
+			.select(concat_ws(":", $"_1", $"_2").as("sex:game"), $"times")
+			.show
 
 		val df = spark.read.json(spark.createDataset(spark.sparkContext.parallelize(personJsonList)))
+		info("person data frame show")
 		df.show
 
+		info("person filter name contains play data frame show")
 		df.filter(array_contains(split($"name", "-"), "play")).show
 
 		Utils.sleep()

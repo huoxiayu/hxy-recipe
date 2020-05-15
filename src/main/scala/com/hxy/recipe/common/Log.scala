@@ -8,6 +8,8 @@ trait Log {
 
 	val log: slf4j.Logger = LoggerFactory.getLogger(this.getClass)
 
+	def info(msg: String): Unit = log.info(msg)
+
 	def info(msg: Any): Unit = log.info("" + msg)
 
 	implicit def df2string(df: DataFrame): String = {

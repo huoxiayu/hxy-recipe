@@ -10,9 +10,10 @@ object SparkMLRunner extends Log {
 	implicit val spark: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
 
 	def main(args: Array[String]): Unit = {
+		// https://blog.csdn.net/liulingyuan6/article/details/53410832 => bucketizer
 		log.info("spark ml runner start")
 
-		new SparkKMeans().kmeans()
+	 	new SparkFeature().standardScaler()
 
 		log.info("spark ml runner end")
 	}
