@@ -1,15 +1,10 @@
-package com.hxy.algo.indexbooleanexpression;
-
-import lombok.ToString;
+package com.hxy.algo.bool.index;
 
 import java.util.List;
 
-@ToString
 public class ItemImpl implements Item {
 
-    @ToString.Include
     private final String id;
-    @ToString.Exclude
     private final List<Clause> clauseList;
 
     public ItemImpl(String id, List<Clause> clauseList) {
@@ -18,8 +13,18 @@ public class ItemImpl implements Item {
     }
 
     @Override
+    public String id() {
+        return id;
+    }
+
+    @Override
     public List<Clause> clauseList() {
         return clauseList;
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 
 }
