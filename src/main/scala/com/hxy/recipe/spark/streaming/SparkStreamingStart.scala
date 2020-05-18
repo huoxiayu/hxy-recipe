@@ -1,7 +1,11 @@
 package com.hxy.recipe.spark.streaming
 
 import com.hxy.recipe.common.Log
+import com.hxy.recipe.kafka.KafkaConstants
+import com.hxy.recipe.kafka.model.{Event, JsonDeserializer}
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.streams.StreamsConfig
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
@@ -21,28 +25,25 @@ object SparkStreamingStart extends Log {
 	def kafka()(implicit spark: SparkSession): Unit = {
 		val streamingContext = new StreamingContext(spark.sparkContext, Seconds(5))
 		val kafkaParams = Map[String, Object](
-			"bootstrap.servers" -> "localhost:9092",
-			"key.deserializer" -> classOf[StringDeserializer],
-			"value.deserializer" -> classOf[StringDeserializer],
-			"group.id" -> "hxy-spark-streaming",
-			"auto.offset.reset" -> "latest",
-			"enable.auto.commit" -> Boolean.box(true)
+			ConsumerConfig.GROUP_ID_CONFIG -> "hxy-spark-streaming",
+			StreamsConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092",
+			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
+			ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[JsonDeserializer].getName,
+			ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest"
 		)
-		val topics = Array("test")
-		val stream = KafkaUtils.createDirectStream[String, String](
+		val topics = Array(KafkaConstants.TOPIC)
+		val stream = KafkaUtils.createDirectStream[String, Event](
 			streamingContext,
 			PreferConsistent,
-			Subscribe[String, String](topics, kafkaParams)
+			Subscribe[String, Event](topics, kafkaParams)
 		)
 
 		stream.foreachRDD(rdd => {
-			rdd.foreach(record => info(s"consume: ${(record.key(), record.value())}..."))
+			rdd.foreach(record => info(s"consume: ${(record.key(), record.value())}"))
 		})
 
 		streamingContext.start()
-
-		val timeoutInMillis = 10000L
-		streamingContext.awaitTerminationOrTimeout(timeoutInMillis)
+		streamingContext.awaitTermination()
 	}
 
 	/**
