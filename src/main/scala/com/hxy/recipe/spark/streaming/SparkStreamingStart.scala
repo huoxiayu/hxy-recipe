@@ -3,11 +3,12 @@ package com.hxy.recipe.spark.streaming
 import com.hxy.recipe.common.Log
 import com.hxy.recipe.kafka.KafkaConstants
 import com.hxy.recipe.kafka.model.{Event, JsonDeserializer}
-import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.streaming.dstream.InputDStream
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
@@ -32,15 +33,16 @@ object SparkStreamingStart extends Log {
 			ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest"
 		)
 		val topics = Array(KafkaConstants.TOPIC)
-		val stream = KafkaUtils.createDirectStream[String, Event](
+		val stream: InputDStream[ConsumerRecord[String, Event]] = KafkaUtils.createDirectStream[String, Event](
 			streamingContext,
 			PreferConsistent,
 			Subscribe[String, Event](topics, kafkaParams)
 		)
 
-		stream.foreachRDD(rdd => {
-			rdd.foreach(record => info(s"consume: ${(record.key(), record.value())}"))
-		})
+		stream.map(record => record.value())
+			.map(event => (event.getSource + ":" + event.getEvent, event.getTimes))
+			.reduceByKey(_ + _)
+			.print()
 
 		streamingContext.start()
 		streamingContext.awaitTermination()

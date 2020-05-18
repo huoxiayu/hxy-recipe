@@ -11,6 +11,8 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.Windowed;
 
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -27,8 +29,9 @@ public class KafkaStreamingStart {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         final StreamsBuilder builder = new StreamsBuilder();
         final KStream<String, Event> source = builder.stream(KafkaConstants.TOPIC);
-        final KTable<String, Long> counts = source
+        final KTable<Windowed<String>, Long> counts = source
             .groupBy((key, value) -> value.getSource() + "-" + value.getEvent())
+            .windowedBy(TimeWindows.of(5000L))
             .count();
 
         counts.toStream().foreach((key, value) -> log.info("key: {}, value: {}", key, value));
