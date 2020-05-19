@@ -19,16 +19,17 @@ public class Event {
     public static final List<String> sourceList = List.of("app1", "app2", "app3");
     public static final List<String> eventList = List.of("view", "click", "download");
 
-    private String source;
-    private String event;
-    private int times;
+    public String source;
+    public String event;
+    public int times;
+    public long timestamp;
 
     public static Event randomEvent() {
         String source = sourceList.get(ThreadLocalRandom.current().nextInt(sourceList.size()));
         String event = eventList.get(ThreadLocalRandom.current().nextInt(eventList.size()));
         // [1, 10)
         int times = ThreadLocalRandom.current().nextInt(1, 10);
-        return new Event(source, event, times);
+        return new Event(source, event, times, System.currentTimeMillis());
     }
 
 }
