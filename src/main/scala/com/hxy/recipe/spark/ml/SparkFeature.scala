@@ -8,6 +8,83 @@ class SparkFeature(implicit spark: SparkSession) {
 
 	import spark.implicits._
 
+	// 用于将连续型特征转换为类别特征
+	def quantileDiscretizer(): Unit = {
+		val df = Seq(
+			(0, 18.0),
+			(1, 19.0),
+			(2, 8.0),
+			(3, 5.0),
+			(4, 2.2)
+		).toDF("id", "hour")
+		df.show
+
+		val discretizer = new QuantileDiscretizer()
+			.setInputCol("hour")
+			.setOutputCol("result")
+			.setNumBuckets(3)
+
+		val result = discretizer.fit(df).transform(df)
+		result.show()
+	}
+
+	// 可以将若干列合并为一个向量并且铺平
+	def vectorAssembler(): Unit = {
+		val df = Seq(
+			(0, 18, 100, Vectors.dense(0.0, 10.0, 0.5), 1.0)
+		).toDF("id", "hour", "pace", "userFeatures", "clicked")
+		df.show(false)
+
+		new VectorAssembler()
+			.setInputCols(Array("hour", "pace", "userFeatures"))
+			.setOutputCol("features")
+			.transform(df)
+			.select("features", "clicked")
+			.show(false)
+	}
+
+	def sqlTransformer(): Unit = {
+		val df = Seq(
+			(0, 1.0, 3.0),
+			(1, 2.0, 4.0)
+		).toDF("id", "v1", "v2")
+		df.show
+
+		// __THIS__用于指定输入的数据表
+		val sqlTransformer = new SQLTransformer()
+			.setStatement("SELECT *, (v1 + v2) AS v3, (v1 * v2) AS v4 FROM __THIS__")
+		sqlTransformer.transform(df).show()
+	}
+
+	// 可用于改变特征中各维度的权重
+	def elementWiseProduct(): Unit = {
+		val df = Seq(
+			("a", Vectors.dense(1.0, 2.0, 3.0)),
+			("b", Vectors.dense(4.0, 5.0, 6.0))
+		).toDF("id", "vector")
+		df.show
+
+		val transformingVector = Vectors.dense(0.0, 1.0, 2.0)
+		val transformer = new ElementwiseProduct()
+			.setScalingVec(transformingVector)
+			.setInputCol("vector")
+			.setOutputCol("transformedVector")
+		transformer.transform(df).show()
+	}
+
+	def bucketizer(): Unit = {
+		val data = Seq(-100, -0.5, -0.3, 0.0, 0.2, 10)
+		val df = data.map(Tuple1.apply).toDF("features")
+		df.show
+
+		val bucketizer = new Bucketizer()
+			.setInputCol("features")
+			.setOutputCol("bucketedFeatures")
+			.setSplits(Array(Double.NegativeInfinity, -0.5, 0.0, 0.5, Double.PositiveInfinity))
+
+		bucketizer.transform(df).show()
+	}
+
 	def maxAbsScaler(): Unit = {
 		val data = Seq(
 			Vectors.dense(1, 1),

@@ -5,7 +5,6 @@ import com.hxy.recipe.kafka.KafkaConstants
 import com.hxy.recipe.kafka.model.{Event, JsonDeserializer}
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.kafka.streams.StreamsConfig
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
@@ -17,8 +16,8 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 object SparkStreamingStart extends Log {
 
 	private val expireInMillis = Seconds(60).milliseconds
-	private val outputDir = "/huoxiayu/output/"
-	private val checkPointDir = "/huoxiayu/checkpoint/"
+	private val outputDir = "/huoxiayu/spark/streaming/output/"
+	private val checkPointDir = "/huoxiayu/spark/streaming/checkpoint/"
 	private val sparkConf: SparkConf = new SparkConf().setAppName("hxy-spark-streaming-app").setMaster("local[2]")
 	implicit private val spark: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
 
@@ -43,7 +42,7 @@ object SparkStreamingStart extends Log {
 
 		val kafkaParams = Map[String, Object](
 			ConsumerConfig.GROUP_ID_CONFIG -> "hxy-spark-streaming",
-			StreamsConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092",
+			ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092",
 			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
 			ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[JsonDeserializer].getName,
 			ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "latest",
