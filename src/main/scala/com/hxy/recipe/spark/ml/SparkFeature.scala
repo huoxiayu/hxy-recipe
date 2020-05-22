@@ -1,12 +1,60 @@
 package com.hxy.recipe.spark.ml
 
+import org.apache.spark.ml.attribute.{Attribute, AttributeGroup, NumericAttribute}
 import org.apache.spark.ml.feature._
 import org.apache.spark.ml.linalg.Vectors
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.{Row, SparkSession}
 
 class SparkFeature(implicit spark: SparkSession) {
 
 	import spark.implicits._
+
+	/**
+	  * ~分隔特征和label
+	  * +合并 +0删除截距
+	  * -删除 -0删除截距
+	  * :乘
+	  * 例如：
+	  * 1、 y ~ a + b => y ~ w0 + w1 * a + w2 * b, w0为截距，w1和w2为相关系数
+	  * 2、 y ~ a + b + a:b – 1 => y ~ w1 * a + w2 * b + w3 * a * b，其中w1，w2，w3是相关系数
+	  */
+	def rFormula(): Unit = {
+		val df = Seq(
+			(1, "US", 18, 1.0),
+			(2, "US", 12, 1.0),
+			(3, "CA", 18, 1.0),
+			(4, "CA", 12, 0.0)
+		).toDF("id", "country", "hour", "clicked")
+		df.show
+
+		val formula = new RFormula()
+			.setFormula("clicked ~ country + hour") // 基于country和hour来预测clicked，字符串类型特征会数值化
+			.setFeaturesCol("features")
+			.setLabelCol("label")
+
+		formula.fit(df).transform(df).show()
+	}
+
+	// 输入特征向量，输出原始特征向量子集
+	def vectorSlicer(): Unit = {
+		val rdd: RDD[Row] = spark.sparkContext.parallelize(Seq(Row(Vectors.dense(-2.0, 2.3, 0.0))))
+
+		val numericAttribute = NumericAttribute.defaultAttr
+		val attrs: Array[NumericAttribute] = Array("f1", "f2", "f3").map(numericAttribute.withName)
+		val attrGroup = new AttributeGroup("userFeatures", attrs.asInstanceOf[Array[Attribute]])
+		val df = spark.createDataFrame(rdd, StructType(Array(attrGroup.toStructField())))
+		df.show
+
+		val slicer = new VectorSlicer()
+			.setInputCol("userFeatures")
+			.setOutputCol("features")
+			.setIndices(Array(1)) // 按index选择
+			.setNames(Array("f3")) // 按name选择
+
+		slicer.transform(df).show
+	}
 
 	// 用于将连续型特征转换为类别特征
 	def quantileDiscretizer(): Unit = {
@@ -348,8 +396,7 @@ class SparkFeature(implicit spark: SparkSession) {
 		indexedData.show
 	}
 
-	// 特征选取
-	def featureSelect(): Unit = {
+	def chiSqSelector(): Unit = {
 		val df = Seq(
 			(1, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1),
 			(2, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0),
