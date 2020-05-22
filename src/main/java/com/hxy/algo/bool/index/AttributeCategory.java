@@ -8,6 +8,7 @@ public enum AttributeCategory {
     // default category
     Z,
     GENDER,
-    AGE
+    AGE,
+    APP
 
 }

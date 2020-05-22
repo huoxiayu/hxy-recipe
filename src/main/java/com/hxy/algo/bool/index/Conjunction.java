@@ -3,6 +3,7 @@ package com.hxy.algo.bool.index;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class Conjunction {
+
+    public static final Comparator<Conjunction> COMPARATOR = Comparator.comparing(Conjunction::getId);
 
     private final int id;
     private final List<Clause> clauseList;

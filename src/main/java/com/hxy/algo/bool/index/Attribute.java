@@ -3,6 +3,8 @@ package com.hxy.algo.bool.index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 属性，包含属性类别和值
  */
@@ -17,19 +19,22 @@ public class Attribute {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
 
-        Attribute attribute = (Attribute) o;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        if (!value.equals(attribute.value)) return false;
-        return category == attribute.category;
+        Attribute that = (Attribute) o;
+        return Objects.equals(this.value, that.value) && Objects.equals(this.category, that.category);
     }
 
     @Override
     public int hashCode() {
-        int result = value.hashCode();
-        result = 31 * result + category.hashCode();
+        int result = Objects.hashCode(value);
+        result = 31 * result + Objects.hashCode(category);
         return result;
     }
 

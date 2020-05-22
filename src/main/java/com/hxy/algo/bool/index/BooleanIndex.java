@@ -60,6 +60,11 @@ public class BooleanIndex {
             return Collections.emptyList();
         }
 
+        /**
+         * 这里只讨论一个Item有一组条件的情况（clauseList代表一组条件），多组条件的情况可以拆成多个Item
+         * 因此这里一个Item只会对应到一个conjunction，在collect时不需要去重
+         * @see Item#clauseList()
+         */
         List<Item> result = conjunctionList.stream()
             .flatMap(conjunction -> conjunction.getItemList().stream())
             .collect(Collectors.toList());
@@ -69,23 +74,29 @@ public class BooleanIndex {
 
     private List<Conjunction> getConjunctionListByAssignment(Assignment assignment) {
         List<Conjunction> conjunctions = new ArrayList<>();
-        List<Attribute> attributeList = assignment.getAttributeList();
-        int distinctAttributeCategory = attributeList.stream().map(Attribute::getCategory).distinct().mapToInt(c -> 1).sum();
-        for (int conjunctionSize = Math.min(maxConjunctionSize, distinctAttributeCategory); conjunctionSize > 0; conjunctionSize--) {
-            Map<Attribute, PostingList> att2PostingList = size2Att2PostingList.get(conjunctionSize);
+        List<Attribute> attributesInAssignment = assignment.getAttributeList();
+        int attributeCategoryCount = attributesInAssignment.stream()
+            .map(Attribute::getCategory)
+            .distinct()
+            .mapToInt(c -> 1)
+            .sum();
+        // 每一轮迭代，求出满足matchCategorySize个类别定向的conjunctionList
+        for (int matchCategorySize = Math.min(maxConjunctionSize, attributeCategoryCount); matchCategorySize > 0; matchCategorySize--) {
+            Map<Attribute, PostingList> att2PostingList = size2Att2PostingList.get(matchCategorySize);
             if (MapUtils.isEmpty(att2PostingList)) {
                 continue;
             }
 
             Map<AttributeCategory, List<PostingList>> category2PostingLists = new HashMap<>();
-            attributeList.forEach(att -> {
+            attributesInAssignment.forEach(att -> {
                 PostingList postingList = att2PostingList.get(att);
                 if (postingList != null) {
                     category2PostingLists.computeIfAbsent(att.getCategory(), k -> new ArrayList<>()).add(postingList);
                 }
             });
 
-            if (category2PostingLists.keySet().size() < conjunctionSize) {
+            // 按类别collect到一起，不满足matchCategorySize则跳过本轮迭代
+            if (category2PostingLists.keySet().size() < matchCategorySize) {
                 continue;
             }
 
@@ -93,21 +104,27 @@ public class BooleanIndex {
                 .stream()
                 .map(PostingListsHolder::new)
                 .collect(Collectors.toList());
-            conjunctions.addAll(getMatchConjunctions(conjunctionSize, postingListsHolders));
+            List<Conjunction> matchConjunctionList = getMatchConjunctions(matchCategorySize, postingListsHolders);
+            conjunctions.addAll(matchConjunctionList);
         }
 
         return conjunctions;
     }
 
-    private List<Conjunction> getMatchConjunctions(int conjunctionSize, List<PostingListsHolder> postingListsHolders) {
-        // match [0, lastIdx]
-        int lastIdx = conjunctionSize - 1;
+    /**
+     * postingListsHolders.size() >= conjunctionSize
+     *
+     * @see PostingListsHolder#compareTo(PostingListsHolder)
+     */
+    private List<Conjunction> getMatchConjunctions(int matchCategorySize, List<PostingListsHolder> postingListsHolders) {
         List<Conjunction> conjunctions = new ArrayList<>();
-        Collections.sort(postingListsHolders);
-        while (true) {
+        int lastIdx = matchCategorySize - 1;
+        for (; ; ) {
+            Collections.sort(postingListsHolders);
+
             PostingListsHolder lastPostingList = postingListsHolders.get(lastIdx);
             Conjunction last = lastPostingList.currentConjunction();
-            // 不能match conjunctionSize个条件
+            // 不能满足matchCategorySize个条件，提前退出
             if (last == null) {
                 break;
             }
@@ -117,24 +134,24 @@ public class BooleanIndex {
             int firstId = first.getId();
             int lastId = last.getId();
 
+            // 这里使用AtomicReference是为了允许在lambda中进行set(update)操作
             AtomicReference<Conjunction> nextRef = new AtomicReference<>();
             if (firstId == lastId) {
                 boolean excludeOnConjunctionId = firstPostingList.isExcludeOnConjunctionId(firstId);
                 if (!excludeOnConjunctionId) {
                     conjunctions.add(first);
                 } else {
-                    log.info("postListingHolder {} exclude {}", firstPostingList, firstId);
+                    log.debug("postListingHolder {} exclude {}", firstPostingList, firstId);
                 }
+                // 下一轮迭代的conjunctionId至少为firstId+1
                 nextRef.set(new Conjunction(firstId + 1, Collections.emptyList()));
             } else {
                 nextRef.set(last);
             }
 
-            postingListsHolders.forEach(postingListsHolder -> postingListsHolder.next(nextRef.get()));
-            Collections.sort(postingListsHolders);
+            postingListsHolders.forEach(postingListsHolder -> postingListsHolder.nextGreaterThenOrEqualTo(nextRef.get()));
         }
 
-        log.info("index size {} => {}", conjunctionSize, conjunctions);
         return conjunctions;
     }
 

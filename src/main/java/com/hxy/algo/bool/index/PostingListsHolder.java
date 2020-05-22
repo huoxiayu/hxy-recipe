@@ -1,17 +1,15 @@
 package com.hxy.algo.bool.index;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-@Slf4j
+/**
+ * 同类别PostingList的Holder
+ */
 public class PostingListsHolder implements Comparable<PostingListsHolder> {
 
-    private final TreeSet<Conjunction> conjunctions = new TreeSet<>(Comparator.comparing(Conjunction::getId));
+    private final MultiOrderlyConjunctionList conjunctions = MultiOrderlyConjunctionList.Factory.newConjunctionListContainer();
     private Set<Integer> excludeConjunctionIdSet = new HashSet<>();
     private Conjunction currentConjunction;
 
@@ -19,12 +17,11 @@ public class PostingListsHolder implements Comparable<PostingListsHolder> {
         postingLists.forEach(postingList -> {
             Attribute attribute = postingList.getAttribute();
             List<Conjunction> conjunctionList = postingList.getConjunctionList();
-            conjunctions.addAll(conjunctionList);
+            conjunctions.addOrderlyConjunctionList(conjunctionList);
             conjunctionList.forEach(conjunction -> {
                 Set<Attribute> excludeAttributes = conjunction.getExcludeAttributes();
                 if (excludeAttributes.contains(attribute)) {
                     excludeConjunctionIdSet.add(conjunction.getId());
-                    log.info("postingListHolder {} conjunction {} exclude attribute {}", this, conjunction.getId(), attribute);
                 }
             });
         });
@@ -35,19 +32,27 @@ public class PostingListsHolder implements Comparable<PostingListsHolder> {
         return currentConjunction;
     }
 
-    public void next(Conjunction current) {
-        currentConjunction = conjunctions.ceiling(current);
+    public void nextGreaterThenOrEqualTo(Conjunction current) {
+        if (currentConjunction != null && currentConjunction.getId() < current.getId()) {
+            currentConjunction = conjunctions.nextGreaterThenOrEqualTo(current);
+        }
     }
 
     public boolean isExcludeOnConjunctionId(int conjunctionId) {
         return excludeConjunctionIdSet.contains(conjunctionId);
     }
 
+    /**
+     * PostingListsHolder内部维护的conjunctionList按照conjunction的id从小到大排序
+     * PostingListsHolder之间的排序规则：
+     * 1、按current-conjunction的id从小到大排序，current-conjunction为当前迭代到的conjunction，初始情况下是第一个conjunction
+     * 2、current-conjunction的id相同时，条件为exclude的排前面（用于代码中过滤掉exclude的情况）
+     * 3、current-conjunction为null的排后面（用于代码中快速判断不能满足matchCategorySize个类别条件）
+     */
     @Override
     public int compareTo(PostingListsHolder o) {
         Conjunction current = this.currentConjunction();
         Conjunction other = o.currentConjunction();
-        // null排后面
         if (current == null) {
             return 1;
         } else if (other == null) {
@@ -57,7 +62,6 @@ public class PostingListsHolder implements Comparable<PostingListsHolder> {
             int otherId = other.getId();
             int cmp = Integer.compare(currentId, otherId);
             if (cmp == 0) {
-                // exclude排前面
                 if (isExcludeOnConjunctionId(currentId)) {
                     return -1;
                 } else if (o.isExcludeOnConjunctionId(otherId)) {

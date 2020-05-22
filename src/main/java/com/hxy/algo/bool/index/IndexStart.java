@@ -1,8 +1,14 @@
 package com.hxy.algo.bool.index;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class IndexStart {
 
     public static void main(String[] args) {
@@ -10,8 +16,16 @@ public class IndexStart {
         Attribute attAge50 = new Attribute("50", AttributeCategory.AGE);
         Attribute attBoy = new Attribute("boy", AttributeCategory.GENDER);
         Attribute attGirl = new Attribute("girl", AttributeCategory.GENDER);
+        Attribute attApp1 = new Attribute("app1", AttributeCategory.APP);
+        Attribute attApp2 = new Attribute("app2", AttributeCategory.APP);
 
         Item item = new ItemImpl("i[]", List.of());
+        Item itemApp1 = new ItemImpl("i[app1]", List.of(
+            new Clause(true, List.of(attApp1))
+        ));
+        Item itemApp2 = new ItemImpl("i[app2]", List.of(
+            new Clause(true, List.of(attApp2))
+        ));
         Item itemBoy = new ItemImpl("i[boy]", List.of(
             new Clause(true, List.of(attBoy)))
         );
@@ -27,30 +41,42 @@ public class IndexStart {
             new Clause(true, List.of(attAge50)))
         );
 
-        List<Item> candidateList = List.of(item, itemBoy, itemNotBoy, itemBoyAndAge30, itemNotBoyAndAge50);
-        System.out.println("candidate: " + candidateList.stream().map(Item::id).collect(Collectors.joining(",")));
+        List<Item> candidateList = List.of(
+            item, itemBoy, itemNotBoy, itemBoyAndAge30,
+            itemNotBoyAndAge50, itemApp1, itemApp2
+        );
 
         BooleanIndex booleanIndex = new BooleanIndex(candidateList);
         booleanIndex.show();
 
-        List<Assignment> assignmentList = List.of(
-            new Assignment(),
-            new Assignment(attBoy),
-            new Assignment(attGirl),
-            new Assignment(attAge30),
-            new Assignment(attAge30, attBoy),
-            new Assignment(attAge30, attGirl),
-            new Assignment(attAge50, attBoy),
-            new Assignment(attAge50, attGirl)
+        Map<Assignment, List<Item>> assignment2ResultItemList = Map.of(
+            new Assignment(), List.of(item, itemNotBoy),
+            new Assignment(attApp1), List.of(item, itemNotBoy, itemApp1),
+            new Assignment(attApp2), List.of(item, itemNotBoy, itemApp2),
+            new Assignment(attGirl), List.of(item, itemNotBoy),
+            new Assignment(attBoy), List.of(item, itemBoy),
+            new Assignment(attAge30), List.of(item, itemNotBoy),
+            new Assignment(attAge30, attBoy), List.of(item, itemBoy, itemBoyAndAge30),
+            new Assignment(attAge30, attGirl), List.of(item, itemNotBoy),
+            new Assignment(attAge50, attBoy), List.of(item, itemBoy),
+            new Assignment(attAge50, attGirl), List.of(item, itemNotBoy, itemNotBoyAndAge50)
         );
 
-        List<Runnable> caseList = assignmentList.stream()
-            .map(assignment -> (Runnable) () -> {
-                List<Item> itemList = booleanIndex.getItemsByAssignment(assignment);
-                System.out.println(assignment + " => " + itemList);
-                System.out.println("<-------------------->");
-            })
-            .collect(Collectors.toList());
-        caseList.forEach(Runnable::run);
+        for (Map.Entry<Assignment, List<Item>> entry : assignment2ResultItemList.entrySet()) {
+            Assignment assignment = entry.getKey();
+            List<Item> expectItemList = sort(entry.getValue());
+            List<Item> result = booleanIndex.getItemsByAssignment(assignment);
+            result = sort(result);
+            boolean success = Objects.equals(sort(result), expectItemList);
+            if (success) {
+                log.info("success [assignment {}, expect {}, actual {}]", assignment, expectItemList, result);
+            } else {
+                log.error("fail [assignment {}, expect {}, actual {}]", assignment, expectItemList, result);
+            }
+        }
+    }
+
+    private static List<Item> sort(List<Item> items) {
+        return items.stream().sorted(Comparator.comparing(Item::id)).collect(Collectors.toList());
     }
 }

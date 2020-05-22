@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 一个布尔条件
+ * 一个布尔条件，例如：
  * isInclude=true，attributeList=[age=18, age=30]代表age=18 || age=30
- * isInclude=false，attributeList=[age=18, age=30]代表!(age=18 || age=30)
+ * isInclude=false，attributeList=[age=18, age=30]代表age!=18 && age!=30
  */
 @Getter
 @AllArgsConstructor

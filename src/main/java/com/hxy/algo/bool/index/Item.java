@@ -9,7 +9,6 @@ public interface Item {
 
     String id();
 
-    // clause之间是&关系
     List<Clause> clauseList();
 
 }
