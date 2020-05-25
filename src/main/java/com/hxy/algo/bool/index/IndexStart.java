@@ -3,9 +3,11 @@ package com.hxy.algo.bool.index;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -65,9 +67,9 @@ public class IndexStart {
         for (Map.Entry<Assignment, List<Item>> entry : assignment2ResultItemList.entrySet()) {
             Assignment assignment = entry.getKey();
             List<Item> expectItemList = sort(entry.getValue());
-            List<Item> result = booleanIndex.getItemsByAssignment(assignment);
-            result = sort(result);
-            boolean success = Objects.equals(sort(result), expectItemList);
+            List<Item> result = sort(booleanIndex.getItemsByAssignment(assignment));
+            List<Item> loopResult = loopResult(assignment, candidateList);
+            boolean success = Objects.equals(result, expectItemList) && Objects.equals(result, loopResult);
             if (success) {
                 log.info("success [assignment {}, expect {}, actual {}]", assignment, expectItemList, result);
             } else {
@@ -76,7 +78,22 @@ public class IndexStart {
         }
     }
 
+    private static List<Item> loopResult(Assignment assignment, List<Item> itemList) {
+        Set<Attribute> attSet = new HashSet<>(assignment.getAttributeList());
+        return sort(itemList.stream()
+            .filter(item -> item.clauseList()
+                .stream()
+                .allMatch(clause -> clause.getAttributeList()
+                    .stream()
+                    .allMatch(att -> attSet.contains(att) ^ clause.isExclude())
+                )
+            )
+            .collect(Collectors.toList())
+        );
+    }
+
     private static List<Item> sort(List<Item> items) {
         return items.stream().sorted(Comparator.comparing(Item::id)).collect(Collectors.toList());
     }
+
 }

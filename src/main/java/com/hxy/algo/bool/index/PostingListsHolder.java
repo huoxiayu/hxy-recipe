@@ -1,8 +1,7 @@
 package com.hxy.algo.bool.index;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 同类别PostingList的Holder
@@ -10,21 +9,15 @@ import java.util.Set;
 public class PostingListsHolder implements Comparable<PostingListsHolder> {
 
     private final MultiOrderlyConjunctionList conjunctions = MultiOrderlyConjunctionList.Factory.newConjunctionListContainer();
-    private Set<Integer> excludeConjunctionIdSet = new HashSet<>();
+    private ComposeSet<Integer> excludeConjunctionIdSet;
     private Conjunction currentConjunction;
 
     public PostingListsHolder(List<PostingList> postingLists) {
-        postingLists.forEach(postingList -> {
-            Attribute attribute = postingList.getAttribute();
-            List<Conjunction> conjunctionList = postingList.getConjunctionList();
-            conjunctions.addOrderlyConjunctionList(conjunctionList);
-            conjunctionList.forEach(conjunction -> {
-                Set<Attribute> excludeAttributes = conjunction.getExcludeAttributes();
-                if (excludeAttributes.contains(attribute)) {
-                    excludeConjunctionIdSet.add(conjunction.getId());
-                }
-            });
-        });
+        excludeConjunctionIdSet = new ComposeSet<>(postingLists.stream()
+            .map(PostingList::getExcludeConjunctionIdSet)
+            .collect(Collectors.toList())
+        );
+        postingLists.forEach(postingList -> conjunctions.addOrderlyConjunctionList(postingList.getConjunctionList()));
         currentConjunction = conjunctions.first();
     }
 

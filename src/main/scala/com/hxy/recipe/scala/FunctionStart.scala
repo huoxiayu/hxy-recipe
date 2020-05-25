@@ -34,6 +34,18 @@ object FunctionStart extends Log {
 	def decorate(msg: String, left: String = "[", right: String = "]"): String = left + msg + right
 
 	def main(args: Array[String]): Unit = {
+		// create partial function by case statement
+		val doubleEvens: PartialFunction[Int, Int] = {
+			case x if (x % 2) == 0 => x * 2
+		}
+
+		val tripleOdds: PartialFunction[Int, Int] = {
+			case x if (x % 2) != 0 => x * 3
+		}
+
+		val chainOfPartialFunction = doubleEvens orElse tripleOdds
+		println(chainOfPartialFunction(3))
+
 		info(sum(Seq(): _*))
 		info(sum(1 to 10: _*))
 

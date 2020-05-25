@@ -30,17 +30,18 @@ public class BooleanIndex {
         itemList.forEach(item -> {
             List<Clause> clauseList = new ArrayList<>(item.clauseList());
             clauseList.add(Clause.DEFAULT_CLAUSE);
-            int includeClauseSize = clauseList.stream()
-                .filter(Clause::isInclude)
-                .mapToInt(c -> 1)
-                .sum();
             Conjunction conjunction = getConjunctionByClauseList(clauseList);
             conjunction.addItem(item);
-            Map<Attribute, PostingList> attribute2PostingList = size2Att2PostingList.computeIfAbsent(includeClauseSize, k -> new HashMap<>());
+            Map<Attribute, PostingList> attribute2PostingList = size2Att2PostingList.computeIfAbsent(
+                conjunction.getIncludeClauseSize(),
+                k -> new HashMap<>()
+            );
             clauseList.forEach(clause -> {
                 List<Attribute> attributeList = clause.getAttributeList();
                 attributeList.forEach(attribute -> {
-                    PostingList postingList = attribute2PostingList.computeIfAbsent(attribute, k -> new PostingList(attribute));
+                    PostingList postingList = attribute2PostingList.computeIfAbsent(
+                        attribute, k -> new PostingList(attribute)
+                    );
                     postingList.addConjunction(conjunction);
                 });
             });
@@ -104,6 +105,7 @@ public class BooleanIndex {
                 .stream()
                 .map(PostingListsHolder::new)
                 .collect(Collectors.toList());
+
             List<Conjunction> matchConjunctionList = getMatchConjunctions(matchCategorySize, postingListsHolders);
             conjunctions.addAll(matchConjunctionList);
         }

@@ -1,6 +1,7 @@
 #### scala quick start
 可以使用[scala在线ide](https://scalafiddle.io/)  
-或者scala交互式解释器REPL(read eval print loop)
+或者scala交互式解释器REPL(read eval print loop)  
+或者[scala exercises](https://www.scala-exercises.org/)
 
 #### scala中的类型
 scala并不刻意区分基本类型和包装类型。
