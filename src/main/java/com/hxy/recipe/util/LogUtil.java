@@ -12,4 +12,9 @@ public final class LogUtil {
         log.info("<-------------------------------------------------->");
     }
 
+    public static void newLine(String prompt) {
+        log.info("<-------------------------------------------------->");
+        log.info(prompt);
+    }
+
 }
