@@ -170,7 +170,7 @@
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka-server</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
 
         <dependency>
@@ -305,11 +305,16 @@
             <version>${guava.version}</version>
         </dependency>
 
-        <!-- avro -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>4.0.2</version>
         </dependency>
     </dependencies>
 

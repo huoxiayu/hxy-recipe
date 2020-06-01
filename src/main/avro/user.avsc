@@ -1,4 +1,4 @@
-{"namespace": "com.hxy.avro",
+{"namespace": "com.hxy.recipe.rpc.avro",
  "type": "record",
  "name": "User",
  "fields": [

@@ -1,4 +1,4 @@
-package com.hxy.avro;
+package com.hxy.recipe.rpc.avro;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
@@ -30,7 +30,7 @@ public class UserSerialization {
         User user2 = new User("abc", 20, "321");
 
         Schema schema = User.getClassSchema();
-        log.debug("schema is: {}", schema);
+        log.info("schema is: {}", schema);
 
         dataFileWriter.create(schema, new File(TARGET_PATH));
         dataFileWriter.append(user1);
