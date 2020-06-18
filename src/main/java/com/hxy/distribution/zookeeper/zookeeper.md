@@ -74,7 +74,16 @@ master-worker是一个广泛使用的分布式架构。如：
 ### 如何用ZooKeeper实现Master&Worker架构
 todo：代码事例
 
+### ZooKeeper源码
+git clone https://github.com/apache/zookeeper.git
+git checkout branch-3.5.5
 
-
+### ZooKeeper客户端
+主类：ZooKeeper
+从源码注释中得到的关键信息：
+1. ZooKeeper类是线程安全的
+2. client和ZooKeeper集群建连后会被分配一个sessionId，client需要定时发送心跳保活，否则session会失效，失效时必须重新建立连接。
+3. API有同步和异步两种，同步操作会阻塞直到server返回。异步操作只是放到了queue中会立即返回。异步API可以在callback中处理rc（return code，包含成功or失败等）
+4. 实现watch接口可以处理watch事件。connection被drop时client会收到一个特殊的事件：EventType None and KeeperState Disconnected，而之前的watch会丢失。
 
 
