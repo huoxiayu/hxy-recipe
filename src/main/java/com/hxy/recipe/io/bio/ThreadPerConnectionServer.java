@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * @see com.hxy.recipe.io.client.ClientMain
+ */
 @Slf4j
 public class ThreadPerConnectionServer {
 
@@ -28,13 +31,11 @@ public class ThreadPerConnectionServer {
             this.strategy = strategy;
             this.serverSocket = new ServerSocket(port);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                        log.info("server socket close");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    serverSocket.close();
+                    log.info("server socket close");
+                } catch (IOException e) {
+                    log.error("IOException: {}", e);
                 }
             }));
         }
@@ -45,7 +46,7 @@ public class ThreadPerConnectionServer {
             while (!Thread.interrupted()) {
                 try {
                     // new thread or single thread or thread pool
-                    Socket socket = serverSocket.accept();
+                    Socket socket = serverSocket.accept(); // accept is block
                     log.info("new connection");
 
                     Handler handler = new Handler(socket);
@@ -56,10 +57,10 @@ public class ThreadPerConnectionServer {
                     } else if (strategy == Strategy.thread_pool) {
                         Utils.newExecutors("thread-per-connection").execute(handler);
                     } else {
-                        log.error("no strategy");
+                        throw new IllegalStateException("no strategy");
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("IOException: {}", e);
                 }
             }
         }
@@ -85,13 +86,13 @@ public class ThreadPerConnectionServer {
 
                 log.info("server process end");
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IOException: {}", e);
             } finally {
                 try {
                     socket.close();
                     log.info("connection close");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("IOException: {}", e);
                 }
             }
         }
@@ -99,13 +100,13 @@ public class ThreadPerConnectionServer {
 
     public static void main(String[] args) throws IOException {
         // sumCost: 5854 seconds, totalCost: 1874 milliseconds
-        new Server(Server.Strategy.single_thread, Utils.PORT).run();
+        // new Server(Server.Strategy.single_thread, Utils.PORT).run();
 
         // sumCost: 3026 seconds, totalCost: 1174 milliseconds
-        // new Server(Server.Strategy.new_thread, Utils.PORT).singleRun();
+        // new Server(Server.Strategy.new_thread, Utils.PORT).run();
 
         // sumCost: 1505 seconds, totalCost: 535 milliseconds
-        // new Server(Server.Strategy.thread_pool, Utils.PORT).singleRun();
+        new Server(Server.Strategy.thread_pool, Utils.PORT).run();
     }
 
 }

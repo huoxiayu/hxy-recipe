@@ -15,6 +15,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * a simple client send msg and record rtt
+ */
 @Slf4j
 public class ClientMain {
 
@@ -35,25 +38,24 @@ public class ClientMain {
                 socket = new Socket("localhost", port);
                 log.info("client connect");
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IOException: {}", e);
                 return 0L;
             }
 
             try (PrintWriter pw = new PrintWriter(socket.getOutputStream(), true); BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                 log.info("client send");
                 pw.println("hello world");
-
                 String line = br.readLine();
                 log.info("client recv: " + line);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IOException: {}", e);
                 return 0L;
             } finally {
                 try {
                     socket.close();
                     log.info("client end");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("IOException: {}", e);
                 }
             }
 
@@ -63,7 +65,7 @@ public class ClientMain {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         long start = System.currentTimeMillis();
-        final int requests = 5000;
+        final int requests = 1;
         List<Future<Long>> futures = new ArrayList<>();
         for (int i = 0; i < requests; i++) {
             Future<Long> future = Utils.newExecutors("client").submit(new Client(Utils.PORT));
