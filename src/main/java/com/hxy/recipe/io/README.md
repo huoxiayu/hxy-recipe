@@ -1,3 +1,8 @@
+## jdk nio核心概念
+1. 缓冲buffer负责缓冲数据
+2. 通道channel负责传输数据
+3. 选择器selector可以用一个线程来对注册到选择器的多个通道进行选择，称之为IO多路复用。
+
 ## 网络应用
 网络应用的基本架构：   
 read request -> decode request -> process service -> encode reply -> send reply   
