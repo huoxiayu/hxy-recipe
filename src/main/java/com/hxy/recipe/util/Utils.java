@@ -77,4 +77,10 @@ public final class Utils {
         sleepInMillis(ThreadLocalRandom.current().nextInt(1, 100));
     }
 
+    public static void join() {
+        while (true) {
+            sleepInSeconds(1000L);
+        }
+    }
+
 }

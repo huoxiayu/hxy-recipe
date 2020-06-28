@@ -100,13 +100,15 @@ public class ThreadPerConnectionServer {
 
     public static void main(String[] args) throws IOException {
         // sumCost: 5854 seconds, totalCost: 1874 milliseconds
-        // new Server(Server.Strategy.single_thread, Utils.PORT).run();
-
-        // sumCost: 3026 seconds, totalCost: 1174 milliseconds
-        // new Server(Server.Strategy.new_thread, Utils.PORT).run();
+        Utils.newExecutors("thread-per-conn").execute(new Server(Server.Strategy.single_thread, Utils.PORT));
 
         // sumCost: 1505 seconds, totalCost: 535 milliseconds
-        new Server(Server.Strategy.thread_pool, Utils.PORT).run();
+        Utils.newExecutors("thread-per-conn").execute(new Server(Server.Strategy.thread_pool, Utils.PORT + 1));
+
+        // sumCost: 3026 seconds, totalCost: 1174 milliseconds
+        Utils.newExecutors("thread-per-conn").execute(new Server(Server.Strategy.new_thread, Utils.PORT + 2));
+
+        Utils.join();
     }
 
 }

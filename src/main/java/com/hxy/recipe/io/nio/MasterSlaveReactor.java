@@ -25,7 +25,7 @@ public class MasterSlaveReactor {
 
         private final Selector selector;
         private final ServerSocketChannel serverSocketChannel;
-        private final List<EventLoop> eventLoopList = new ArrayList<>();
+        private final List<EventLoop> eventLoopList = new ArrayList<>(Utils.CORES);
 
         public Reactor(int port) throws IOException {
             this.selector = Selector.open();
@@ -39,7 +39,6 @@ public class MasterSlaveReactor {
         @Override
         public void run() {
             log.info("server start");
-
             for (int i = 0; i < Utils.CORES; i++) {
                 EventLoop eventLoop = new EventLoop();
                 eventLoop.start();
@@ -61,7 +60,7 @@ public class MasterSlaveReactor {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("IOException: {}", e);
                 }
             }
         }
@@ -90,19 +89,16 @@ public class MasterSlaveReactor {
         @Override
         public void run() {
             try {
-                log.info("new connection");
                 SocketChannel socketChannel = serverSocketChannel.accept();
+                log.info("new connection");
                 socketChannel.configureBlocking(false);
 
-                int pos = idx.getAndIncrement() % eventLoopList.size();
-                EventLoop eventLoop = eventLoopList.get(pos);
-                Selector selector = eventLoop.getSelector();
-
+                Selector selector = eventLoopList.get(idx.getAndIncrement() % eventLoopList.size()).getSelector();
                 SelectionKey selectionKey = socketChannel.register(selector, SelectionKey.OP_READ);
                 selectionKey.attach(new Handler(socketChannel));
                 selector.wakeup();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IOException: {}", e);
             }
         }
     }
@@ -118,46 +114,41 @@ public class MasterSlaveReactor {
         @Override
         public void run() {
             try {
-                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                ByteBuffer buffer = ByteBuffer.allocate(128);
                 int readBytes = socketChannel.read(buffer);
                 log.info("read {} bytes from port {}", readBytes, socketChannel.getRemoteAddress());
 
-                if (readBytes > 0) {
-                    Runnable runnable = () -> Try.run(() -> {
-                        buffer.flip();
-
-                        byte[] bytes = new byte[readBytes];
-                        buffer.get(bytes);
-
-                        String input = new String(bytes);
-                        String output = process(input);
-
-                        byte[] outputBytes = output.getBytes();
-                        ByteBuffer writeBuffer = ByteBuffer.allocate(outputBytes.length);
-                        writeBuffer.put(outputBytes);
-                        writeBuffer.flip();
-
-                        socketChannel.write(writeBuffer);
-                        log.info("server process end");
-                    }).get();
-
-                    Utils.newExecutors("process").execute(runnable);
-                } else {
+                if (readBytes == -1) {
                     socketChannel.close();
                     log.info("connection close");
+                    return;
                 }
+
+                if (readBytes <= 0) {
+                    throw new RuntimeException("no read data");
+                }
+
+                Try.run(() -> {
+                    buffer.flip();
+
+                    byte[] bytes = new byte[readBytes];
+                    buffer.get(bytes);
+
+                    String input = new String(bytes);
+                    String output = process(input);
+
+                    ByteBuffer writeBuffer = ByteBuffer.wrap(output.getBytes());
+                    int writeBytes = socketChannel.write(writeBuffer);
+                    log.info("write {} bytes to port {}", writeBytes, socketChannel.getRemoteAddress());
+                });
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IOException: {}", e);
             }
         }
 
         // biz process
         private String process(String input) {
             log.info("recv input: {}", input);
-
-            // process biz cost 100 millis
-            Utils.sleepInMillis(10L);
-
             return input;
         }
     }
@@ -188,7 +179,7 @@ public class MasterSlaveReactor {
                         runnable.run();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("IOException: {}", e);
                 }
             }
         }

@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +44,7 @@ public class ClientMain {
             try (PrintWriter pw = new PrintWriter(socket.getOutputStream(), true); BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                 log.info("client send");
                 pw.println("hello world");
+
                 String line = br.readLine();
                 log.info("client recv: " + line);
             } catch (IOException e) {
@@ -63,12 +63,12 @@ public class ClientMain {
         }
     }
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    private static void run(int port) throws Exception {
         long start = System.currentTimeMillis();
-        final int requests = 1;
+        final int requests = 1000;
         List<Future<Long>> futures = new ArrayList<>();
         for (int i = 0; i < requests; i++) {
-            Future<Long> future = Utils.newExecutors("client").submit(new Client(Utils.PORT));
+            Future<Long> future = Utils.newExecutors("client").submit(new Client(port));
             futures.add(future);
         }
 
@@ -80,6 +80,11 @@ public class ClientMain {
 
         long totalCost = System.currentTimeMillis() - start;
         log.info("sumCost: {} seconds, totalCost: {} milliseconds", TimeUnit.MILLISECONDS.toSeconds(sumCost), totalCost);
+    }
+
+    public static void main(String[] args) throws Exception {
+        run(Utils.PORT);
+        // run(Utils.PORT + 1);
     }
 
 }
