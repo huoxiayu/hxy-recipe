@@ -1,4 +1,4 @@
-package com.hxy.recipe.io.netty.start;
+package com.hxy.recipe.io.netty;
 
 import com.hxy.recipe.util.Utils;
 import io.netty.bootstrap.ServerBootstrap;
@@ -19,15 +19,15 @@ public class EchoServer {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel socketChannel) {
-                            socketChannel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
-                            socketChannel.pipeline().addLast(new EchoServerHandler());
-                        }
-                    });
+                .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel socketChannel) {
+                        socketChannel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+                        socketChannel.pipeline().addLast(new EchoServerHandler());
+                    }
+                });
 
             ChannelFuture f = serverBootstrap.bind(Utils.PORT).sync();
             f.channel().closeFuture().sync();

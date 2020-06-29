@@ -10,9 +10,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * @see com.hxy.recipe.io.client.ClientMain
- */
 @Slf4j
 public class ThreadPerConnectionServer {
 

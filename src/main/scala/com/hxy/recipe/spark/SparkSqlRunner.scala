@@ -63,7 +63,7 @@ object SparkSqlRunner extends Log {
 		info("person filter name contains play data frame show")
 		df.filter(array_contains(split($"name", "-"), "play")).show
 
-		Utils.sleep()
+		Utils.sleepInSeconds(10L)
 
 		val explodedDf = df.select($"age", $"name" as "player", explode($"registerGameList").alias("game"))
 		explodedDf.printSchema

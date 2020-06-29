@@ -28,7 +28,7 @@ public class ExceptionInLambda {
             e.printStackTrace();
         }
 
-        Utils.sleepInMinutes(5L);
+        Utils.sleepInSeconds(300L);
     }
 
 }

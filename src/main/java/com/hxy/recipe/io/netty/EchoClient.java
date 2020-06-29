@@ -1,4 +1,4 @@
-package com.hxy.recipe.io.netty.start;
+package com.hxy.recipe.io.netty;
 
 import com.hxy.recipe.util.Utils;
 import io.netty.bootstrap.Bootstrap;
