@@ -1,6 +1,5 @@
 package com.hxy.distribution.zookeeper;
 
-import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -20,9 +19,6 @@ public class ZooKeeperStart {
         Watcher watcher = watchEvent -> log.info("receive event: {}", watchEvent);
 
         ZooKeeper zooKeeper = new ZooKeeper("localhost:2181", 10_000, watcher);
-
-        Utils.sleepInSeconds(5L);
-        log.info("sleep done");
 
         String path = zooKeeper.create(
             zkPath,
