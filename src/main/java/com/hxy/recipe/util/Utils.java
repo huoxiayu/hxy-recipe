@@ -2,6 +2,7 @@ package com.hxy.recipe.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
 
@@ -67,6 +69,20 @@ public final class Utils {
 
     public static void randomSleepInMillis() {
         sleepInMillis(ThreadLocalRandom.current().nextInt(1, 100));
+    }
+
+    public static void assertEx(Runnable runnable, Class<?> exClazz) {
+        try {
+            runnable.run();
+            throw new AssertionError("no exception");
+        } catch (Exception e) {
+            if (e.getClass() != exClazz) {
+                String err = String.format("ex %s is not %s", e.getClass().getSimpleName(), exClazz.getSimpleName());
+                throw new AssertionError(err);
+            } else {
+                log.info("assert ex {} success", e.getClass().getSimpleName());
+            }
+        }
     }
 
     public static void join() {
