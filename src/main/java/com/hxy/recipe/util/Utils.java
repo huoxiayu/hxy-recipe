@@ -93,4 +93,10 @@ public final class Utils {
         }
     }
 
+    public static void join() {
+        while (true) {
+            sleepInSeconds(1000L);
+        }
+    }
+
 }

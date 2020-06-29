@@ -25,15 +25,14 @@ public class NormalReactor {
     public static class Reactor implements Runnable {
 
         private final Selector selector;
-        private final ServerSocketChannel serverSocketChannel;
 
         public Reactor(Strategy strategy, int port) throws IOException {
             this.selector = Selector.open();
-            this.serverSocketChannel = ServerSocketChannel.open();
-            this.serverSocketChannel.configureBlocking(false);
-            this.serverSocketChannel.bind(new InetSocketAddress(port));
-            SelectionKey selectionKey = this.serverSocketChannel.register(this.selector, SelectionKey.OP_ACCEPT);
-            selectionKey.attach(new Accepter(strategy, serverSocketChannel, selector));
+            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.bind(new InetSocketAddress(port));
+            SelectionKey acceptSelectionKey = serverSocketChannel.register(this.selector, SelectionKey.OP_ACCEPT);
+            acceptSelectionKey.attach(new Accepter(strategy, acceptSelectionKey));
         }
 
         @Override
@@ -54,7 +53,6 @@ public class NormalReactor {
                         Object attachment = sk.attachment();
                         if (attachment != null) {
                             dispatch(attachment);
-                            Utils.sleepInSeconds(3L);
                         }
                     }
                 } catch (IOException e) {
@@ -76,23 +74,23 @@ public class NormalReactor {
     public static class Accepter implements Runnable {
 
         private final Strategy strategy;
-        private final ServerSocketChannel serverSocketChannel;
-        private final Selector selector;
+        private final SelectionKey acceptSelectionKey;
 
-        public Accepter(Strategy strategy, ServerSocketChannel serverSocketChannel, Selector selector) {
+        public Accepter(Strategy strategy, SelectionKey acceptSelectionKey) {
             this.strategy = strategy;
-            this.serverSocketChannel = serverSocketChannel;
-            this.selector = selector;
+            this.acceptSelectionKey = acceptSelectionKey;
         }
 
         @Override
         public void run() {
             try {
+                ServerSocketChannel serverSocketChannel = (ServerSocketChannel) acceptSelectionKey.channel();
                 SocketChannel socketChannel = serverSocketChannel.accept();
                 log.info("new connection");
                 socketChannel.configureBlocking(false);
+                Selector selector = acceptSelectionKey.selector();
                 SelectionKey selectionKey = socketChannel.register(selector, SelectionKey.OP_READ);
-                selectionKey.attach(new Handler(strategy, selectionKey, socketChannel));
+                selectionKey.attach(new Handler(strategy, selectionKey));
                 selector.wakeup();
             } catch (IOException e) {
                 log.error("IOException: {}", e);
@@ -107,92 +105,67 @@ public class NormalReactor {
 
         private Strategy strategy;
         private SelectionKey selectionKey;
-        private SocketChannel socketChannel;
         private int state;
-        private ByteBuffer readBuffer;
         private String output;
 
-        public Handler(Strategy strategy, SelectionKey selectionKey, SocketChannel socketChannel) {
+        public Handler(Strategy strategy, SelectionKey selectionKey) {
             this.strategy = strategy;
             this.selectionKey = selectionKey;
-            this.socketChannel = socketChannel;
             this.state = READING;
-            this.readBuffer = ByteBuffer.allocate(128);
         }
 
         @Override
         public void run() {
+            SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
             try {
                 if (state == READING) {
-                    int readBytes = 0;
-                    for (; ; ) {
-                        int read = socketChannel.read(readBuffer);
-                        if (read > 0) {
-                            readBytes += read;
-                        } else {
-                            break;
-                        }
-                    }
+                    log.info("reading");
+                    ByteBuffer readBuffer = ByteBuffer.allocate(128);
+                    int readBytes = socketChannel.read(readBuffer);
                     log.info("read {} bytes from port {}", readBytes, socketChannel.getRemoteAddress());
 
                     if (readBytes == -1) {
-                        selectionKey.cancel();
                         socketChannel.close();
                         log.info("connection close here");
                         return;
                     }
 
-                    if (readBytes == 0) {
-                        log.info("socketChannel.isOpen(): {}", socketChannel.isOpen());
-                        log.info("socketChannel.isConnected(): {}", socketChannel.isConnected());
-                        log.info("selectionKey.isValid(): {}", selectionKey.isValid());
-                        log.info("read empty");
-                        Utils.sleepInSeconds(5L);
-                        return;
+                    if (readBytes <= 0) {
+                        throw new RuntimeException("no data read");
                     }
 
-                    readBuffer.flip();
-                    byte[] bytes = new byte[readBytes];
-                    readBuffer.get(bytes);
-                    readBuffer.clear();
-                    String input = new String(bytes);
-
                     Runnable runnable = () -> Try.run(() -> {
-                        output = process(input);
-                        state = WRITING;
+                        readBuffer.flip();
 
-                        int interestOps = selectionKey.interestOps();
-                        int newInterestOps = interestOps | SelectionKey.OP_WRITE;
-                        selectionKey.interestOps(newInterestOps);
+                        byte[] bytes = new byte[readBytes];
+                        readBuffer.get(bytes);
+
+                        String input = new String(bytes);
+                        output = process(input);
+
+                        state = WRITING;
+                        selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+                        log.info("register op write");
+                        selectionKey.selector().wakeup();
                     });
+
                     if (strategy == Strategy.single_thread) {
                         runnable.run();
                     } else {
                         Utils.newExecutors("process-").execute(runnable);
                     }
                 } else if (state == WRITING) {
-                    byte[] outputBytes = output.getBytes();
-                    ByteBuffer writeBuffer = ByteBuffer.allocate(outputBytes.length);
-                    writeBuffer.put(outputBytes);
-                    writeBuffer.flip();
-                    socketChannel.write(writeBuffer);
-                    log.info("server write end");
-
-                    int interestOps = selectionKey.interestOps();
-                    int newInterestOps = interestOps & (~SelectionKey.OP_WRITE);
-                    selectionKey.interestOps(newInterestOps);
+                    log.info("writing");
+                    ByteBuffer writeBuffer = ByteBuffer.wrap(output.getBytes());
+                    int writeBytes = socketChannel.write(writeBuffer);
+                    log.info("write {} bytes to port {}", writeBytes, socketChannel.getRemoteAddress());
 
                     state = READING;
+                    selectionKey.interestOps(selectionKey.interestOps() & (~SelectionKey.OP_WRITE));
+                    log.info("unregister op write");
                 }
             } catch (IOException e) {
-                log.error("IOException: {}", e);
-                selectionKey.cancel();
-                try {
-                    socketChannel.close();
-                    log.info("connection close here");
-                } catch (IOException e1) {
-                    log.info("connection close fail for {}", e1);
-                }
+                throw new RuntimeException(e);
             }
         }
 
@@ -205,10 +178,12 @@ public class NormalReactor {
 
     public static void main(String[] args) throws IOException {
         // sumCost: 145854 seconds, totalCost: 58106 milliseconds
-        new Reactor(Strategy.single_thread, Utils.PORT).run();
+        Utils.newExecutors("reactor").execute(new Reactor(Strategy.single_thread, Utils.PORT));
 
         // sumCost: 7429 seconds, totalCost: 2893 milliseconds
-        new Reactor(Strategy.multi_thread, Utils.PORT + 1).run();
+        Utils.newExecutors("reactor").execute(new Reactor(Strategy.multi_thread, Utils.PORT + 1));
+
+        Utils.join();
     }
 
 }
