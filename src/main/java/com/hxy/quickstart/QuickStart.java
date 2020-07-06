@@ -1,20 +1,25 @@
 package com.hxy.quickstart;
 
-import java.util.concurrent.ThreadLocalRandom;
+import com.hxy.recipe.util.Utils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StopWatch;
 
+@Slf4j
 public class QuickStart {
 
     public static void main(String[] args) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for (int i = 0; i < 100000; i++) {
-            int rand = ThreadLocalRandom.current().nextInt(1, 10);
-            min = Math.min(min, rand);
-            max = Math.max(max, rand);
-        }
+        StopWatch sw = new StopWatch();
 
-        System.out.println("max: " + max);
-        System.out.println("min: " + min);
+        sw.start();
+        Utils.sleepInMillis(100L);
+        sw.stop();
+
+        sw.start();
+        Utils.sleepInMillis(200L);
+        sw.stop();
+
+        log.info("last task time millis {}", sw.getLastTaskTimeMillis());
+        log.info("total millis {}", sw.getTotalTimeMillis());
     }
 
 }

@@ -7,6 +7,15 @@ import org.roaringbitmap.RoaringBitmap;
 public class RoaringBitMapStart {
 
     public static void main(String[] args) {
+        RoaringBitmap bitMap123 = new RoaringBitmap();
+        log.info("isEmpty {}", bitMap123.isEmpty());
+        bitMap123.add(1, 2, 3);
+        log.info("isEmpty {}", bitMap123.isEmpty());
+        bitMap123.remove(1);
+        bitMap123.remove(2);
+        bitMap123.remove(2);
+        log.info("isEmpty {}", bitMap123.isEmpty());
+
         RoaringBitmap roaringBitmap = RoaringBitmap.bitmapOf(1, 2, 9, 10);
         log.info("roaringBitmap: {}", toList(roaringBitmap));
 

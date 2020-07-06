@@ -15,11 +15,12 @@ public class ObjectMemoryStart {
     }
 
     public static void main(String[] args) {
-        log.info("size of a object {}", RamUsageEstimator.sizeOf(new Object()));
-        log.info("size of a integer {}", RamUsageEstimator.sizeOf(100000));
-        log.info("size of a object[] {}", RamUsageEstimator.sizeOf(new Object[10]));
-        log.info("size of a int[] {}", RamUsageEstimator.sizeOf(new IntClass[10]));
-        log.info("size of a int[] {}", RamUsageEstimator.sizeOf(new IntegerClass[10]));
+        log.info("size of a object {}", RamUsageEstimator.humanSizeOf(new Object()));
+        log.info("size of a integer {}", RamUsageEstimator.humanSizeOf(100000));
+        log.info("size of a int[] {}", RamUsageEstimator.humanSizeOf(new int[10]));
+        log.info("size of a object[] {}", RamUsageEstimator.humanSizeOf(new Object[10]));
+        log.info("size of a IntClass[] {}", RamUsageEstimator.humanSizeOf(new IntClass[10]));
+        log.info("size of a IntegerClass[] {}", RamUsageEstimator.humanSizeOf(new IntegerClass[10]));
     }
 
 }
