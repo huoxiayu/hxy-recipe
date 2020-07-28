@@ -54,10 +54,6 @@ public final class Utils {
         };
     }
 
-    public static void sleep() {
-        sleepInSeconds(10L);
-    }
-
     public static void sleepInMillis(long timeInMillis) {
         try {
             if (timeInMillis > 0L) {
@@ -69,10 +65,6 @@ public final class Utils {
 
     public static void sleepInSeconds(long timeInSeconds) {
         sleepInMillis(timeInSeconds * 1000L);
-    }
-
-    public static void sleepInMinutes(long timeInMinutes) {
-        sleepInSeconds(timeInMinutes * 60L);
     }
 
     public static void randomSleepInMillis() {

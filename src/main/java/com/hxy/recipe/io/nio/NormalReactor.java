@@ -177,11 +177,11 @@ public class NormalReactor {
     }
 
     public static void main(String[] args) throws IOException {
-        // sumCost: 145854 seconds, totalCost: 58106 milliseconds
-        Utils.newExecutors("reactor").execute(new Reactor(Strategy.single_thread, Utils.PORT));
-
         // sumCost: 7429 seconds, totalCost: 2893 milliseconds
-        Utils.newExecutors("reactor").execute(new Reactor(Strategy.multi_thread, Utils.PORT + 1));
+        Utils.newExecutors("reactor").execute(new Reactor(Strategy.multi_thread, Utils.PORT));
+
+        // sumCost: 145854 seconds, totalCost: 58106 milliseconds
+        Utils.newExecutors("reactor").execute(new Reactor(Strategy.single_thread, Utils.PORT + 1));
 
         Utils.join();
     }
