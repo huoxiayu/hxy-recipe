@@ -1,6 +1,9 @@
 ## git官网
 https://git-scm.com/book/zh/v2
 
+## git help
+git help --web log
+
 ## git config相关
 #### git config的key必须带. 如user.name
 #### git config的作用域
@@ -34,9 +37,15 @@ git config --global user.email 'huoxiayu@huoxiayu.com'
 ## 理解工作区和暂存区
 ![avatar](https://static.liaoxuefeng.com/files/attachments/919020037470528/0)
 
-## 版本库
+## 版本库 .git
 隐藏目录.git就是git的版本库
-版本库中最重要的有：stage（或index）即暂存区，git自动创建的第一个分支master，以及指针HEAD
+版本库中最重要的有：
+    
+    stage（或index）即暂存区，
+    git自动创建的第一个分支master
+    指针HEAD（HEAD在.git目录中其实是一个引用，指向当前分支）
+    config（其实就是git config --list --local看到的内容）
+    refs（refs中有heads和tags）
 
 ## 文件重命名
 推荐使用git mv old new不会破坏git的变更历史
@@ -48,3 +57,21 @@ git reset --hard
 git diff 显示修改之后没有暂存起来的变化内容
 git diff --staged 显示的是下一次commit时会提交到HEAD的内容(即暂存起来的变化内容)
 
+## 查看版本演变历史
+    git log
+    git log --oneline 更简洁
+    git log -n 5 查看最近5次修改
+    git log --all --graph 以图形化方式展现所有分支的历史
+    git log --oneline --all -n 4
+
+## git内部原理
+git的本质其实是一个简单的键值数据库   
+你可以像git中插入任意类型的内容，git会返回一个唯一的键，通过该键可以获取到该内容
+git cat-file -p master^{tree}
+
+## 查看git中的对象
+git cat-file -t sha 查看对象类型
+git cat-file -p sha 查看对象内容
+
+## 分支的本质
+分支的本质其实就是一个commit对象，不同的分支指向了不同的commit
