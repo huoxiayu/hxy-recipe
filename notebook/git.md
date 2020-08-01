@@ -23,6 +23,11 @@ git config --global user.email 'huoxiayu@huoxiayu.com'
 ## 建立仓库
     已有项目（文件夹）纳入git管理 -> cd 项目目录 && git init
     直接新建一个被git管理的项目 -> git init 项目目录
+    
+## 建立裸仓库
+
+    git init -bare
+    裸仓库：一般将裸仓库用作共享仓库，每个人往里面push自己的修改同时pull别人的修改，裸仓库一般只有一个.git目录，而没有所谓的工作区，故一般的命名方式是用.git结尾（some_project.git）
 
 ## git状态流转图
 ![avatar](https://git-scm.com/book/en/v2/images/lifecycle.png)
@@ -43,7 +48,7 @@ git config --global user.email 'huoxiayu@huoxiayu.com'
     
     stage（或index）即暂存区，
     git自动创建的第一个分支master
-    指针HEAD（HEAD在.git目录中其实是一个引用，指向当前分支）
+    指针HEAD（HEAD在.git目录中其实是一个引用，指向当前分支或commit（如分离头指针的场景））
     config（其实就是git config --list --local看到的内容）
     refs（refs中有heads和tags）
 
@@ -69,9 +74,24 @@ git的本质其实是一个简单的键值数据库
 你可以像git中插入任意类型的内容，git会返回一个唯一的键，通过该键可以获取到该内容
 git cat-file -p master^{tree}
 
+## commit、tree、blob的关系
+
+    commit存储一次提交的信息，包含tree、parent_commit、author、commit_msg等
+    tree相当于文件系统中的目录，记录了目录下文件的名字和hash的映射
+    blob相当于是文件，因为文件名存储在tree中，所以多个内容相同的文件对应的是一个blob
+    tag可看作是commit的别名
+    执行git add将文件放入暂存区时会生成blob或者tree，多次git add不同的文件内容会生成多个blob
+    执行git commit时会生成commit和tree（指向本次所有修改的目录）
+    
 ## 查看git中的对象
-git cat-file -t sha 查看对象类型
-git cat-file -p sha 查看对象内容
+git cat-file -t hash 查看对象类型
+git cat-file -p hash 查看对象内容
 
 ## 分支的本质
 分支的本质其实就是一个commit对象，不同的分支指向了不同的commit
+
+## 分离头指针
+    分离头指针：git checkout commit-hash
+    git的提示：您正处于分离头指针状态。您可以查看、做试验性的修改及提交，并且您可以在切换回一个分支时，丢弃在此状态下所做的提交而不对分支造成影响。
+    即git建议所有修改在分支上进行
+    分离头指针的场景主要是用于实验性质的修改，如果最后实验发现不需要commit则可以直接丢弃掉
