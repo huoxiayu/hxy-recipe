@@ -1,8 +1,8 @@
 ## git官网
-https://git-scm.com/book/zh/v2
+    https://git-scm.com/book/zh/v2
 
 ## git help
-git help --web log
+    git help --web log
 
 ## git config相关
 #### git config的key必须带. 如user.name
@@ -17,8 +17,8 @@ git help --web log
 #### 清除配置
     git config --unset --local user.name
 #### 使用git前的最小配置
-git config --global user.name 'huoxiayu'
-git config --global user.email 'huoxiayu@huoxiayu.com'
+    git config --global user.name 'huoxiayu'
+    git config --global user.email 'huoxiayu@huoxiayu.com'
 
 ## 建立仓库
     已有项目（文件夹）纳入git管理 -> cd 项目目录 && git init
@@ -28,7 +28,58 @@ git config --global user.email 'huoxiayu@huoxiayu.com'
 
     git init -bare
     裸仓库：一般将裸仓库用作共享仓库，每个人往里面push自己的修改同时pull别人的修改，裸仓库一般只有一个.git目录，而没有所谓的工作区，故一般的命名方式是用.git结尾（some_project.git）
+    
 
+## 删除分支
+    git branch -d branch-name  （如果当前分支没有合并到原分支，则会提示the branch is not fully merged）
+    git branch -D branch-name （可以忽略-d的报错达到强制删除的目的）
+    
+## 修改最近一次commit的message 
+    git commit --amend
+    
+## 修改老旧commit的message
+    git rebase -i base_commit_hash(即基于base_commit_hash这个commit来做变基)
+    然后用reward来重命名commit的message
+    
+## 修改第一次（init）commit的message
+    git rebase -i --root
+    
+## 合并连续几次commit
+    也是git rebase，这次采用squash
+    
+## 合并间隔的几次commit
+    也是git rebase，交互式页面中调整commit的顺序，将需要合并的commit放到一起，注意可能会出现冲突
+    
+## 撤销修改
+    撤销工作区的修改：git checkout
+    撤销暂存区的修改：git reset
+    
+## 消除最近的几次提交
+    git reset --hard HEAD~5 （消除最近的5次修改）
+    
+## 文件重命名
+    推荐使用git mv old new不会破坏git的变更历史
+
+## 清除暂存区
+    git reset --hard
+
+## 查看修改
+    git diff 显示修改之后没有暂存起来的变化内容，即工作区和暂存区的区别
+    git diff --staged 显示的是下一次commit时会提交到HEAD的内容(即暂存起来的变化内容)
+    git diff branch1 branch2 显示branch1和branch2的差异
+    git diff branch1 branch2 -- file 显示branch1和branch2上file的差异
+    git diff commit1 commit2 显示两个commit之间的差异
+
+## 查看版本演变历史
+    git log
+    git log --oneline 更简洁
+    git log -n 5 查看最近5次修改
+    git log --all --graph 以图形化方式展现所有分支的历史
+    git log --oneline --all -n 4
+    
+## 指定不需要纳入git管理的文件类型
+    在.gitignore中配置，支持通配符
+    
 ## git状态流转图
 ![avatar](https://git-scm.com/book/en/v2/images/lifecycle.png)
 
@@ -43,36 +94,18 @@ git config --global user.email 'huoxiayu@huoxiayu.com'
 ![avatar](https://static.liaoxuefeng.com/files/attachments/919020037470528/0)
 
 ## 版本库 .git
-隐藏目录.git就是git的版本库
-版本库中最重要的有：
-    
-    stage（或index）即暂存区，
-    git自动创建的第一个分支master
-    指针HEAD（HEAD在.git目录中其实是一个引用，指向当前分支或commit（如分离头指针的场景））
-    config（其实就是git config --list --local看到的内容）
-    refs（refs中有heads和tags）
+    隐藏目录.git就是git的版本库
+    版本库中最重要的有：
+        stage（或index）即暂存区，
+        git自动创建的第一个分支master
+        指针HEAD（HEAD在.git目录中其实是一个引用，指向当前分支或commit（如分离头指针的场景））
+        config（其实就是git config --list --local看到的内容）
+        refs（refs中有heads和tags）
 
-## 文件重命名
-推荐使用git mv old new不会破坏git的变更历史
-
-## 清除暂存区
-git reset --hard
-
-## 查看修改
-git diff 显示修改之后没有暂存起来的变化内容
-git diff --staged 显示的是下一次commit时会提交到HEAD的内容(即暂存起来的变化内容)
-
-## 查看版本演变历史
-    git log
-    git log --oneline 更简洁
-    git log -n 5 查看最近5次修改
-    git log --all --graph 以图形化方式展现所有分支的历史
-    git log --oneline --all -n 4
-
-## git内部原理
-git的本质其实是一个简单的键值数据库   
-你可以像git中插入任意类型的内容，git会返回一个唯一的键，通过该键可以获取到该内容
-git cat-file -p master^{tree}
+## git内部原理   
+    git的本质其实是一个简单的键值数据库   
+    你可以像git中插入任意类型的内容，git会返回一个唯一的键，通过该键可以获取到该内容
+    git cat-file -p master^{tree}
 
 ## commit、tree、blob的关系
 
@@ -83,15 +116,21 @@ git cat-file -p master^{tree}
     执行git add将文件放入暂存区时会生成blob或者tree，多次git add不同的文件内容会生成多个blob
     执行git commit时会生成commit和tree（指向本次所有修改的目录）
     
-## 查看git中的对象
-git cat-file -t hash 查看对象类型
-git cat-file -p hash 查看对象内容
+## 查看git中的对象   
+    git cat-file -t hash 查看对象类型
+    git cat-file -p hash 查看对象内容
 
 ## 分支的本质
-分支的本质其实就是一个commit对象，不同的分支指向了不同的commit
+    分支的本质其实就是一个commit对象，不同的分支指向了不同的commit
 
 ## 分离头指针
     分离头指针：git checkout commit-hash
     git的提示：您正处于分离头指针状态。您可以查看、做试验性的修改及提交，并且您可以在切换回一个分支时，丢弃在此状态下所做的提交而不对分支造成影响。
     即git建议所有修改在分支上进行
     分离头指针的场景主要是用于实验性质的修改，如果最后实验发现不需要commit则可以直接丢弃掉
+    
+## rebase和分离头指针
+    rebase操作的原理其实就是先把HEAD指向base_commi（此时就处于分离头指针的状态）然后逐个应用新的commit，最后更新HEAD
+    
+    
+    
