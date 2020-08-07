@@ -35,6 +35,9 @@ public class TimeStart {
         log.info("localDate is: {}", localDate);
         log.info("localDate.atStartOfDay: {}", localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli());
 
+        int date = 20200810;
+        LocalDate fromDate = LocalDate.parse(String.valueOf(date), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        log.info("fromDate: {}", fromDate);
     }
 
 }
