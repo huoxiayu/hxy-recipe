@@ -18,6 +18,8 @@ public class Reflection {
     }
 
     public static void main(String[] args) throws NoSuchFieldException {
+        log.info("{}", Boolean.TYPE == Boolean.class);
+
         Bean bean = new Bean();
         Field f = Bean.class.getDeclaredField("id");
         f.setAccessible(true);
