@@ -5,6 +5,14 @@ import org.openjdk.jol.info.ClassLayout;
 
 /**
  * jol（java object layout）工具实践
+ *
+ * 1、java -XX:+PrintCommandLineFlags
+ * 打印默认JVM参数，可以看到：
+ * -XX:+UseCompressedClassPointers -XX:+UseCompressedOops
+ * class-point占4个字节，oops占4个字节
+ * 关闭UseCompressedClassPointers后，class-point占8个字节
+ * 关闭UseCompressedOops后，oops占8个字节
+ * 关闭用：-XX:-UseCompressedClassPointers -XX:-UseCompressedOops
  */
 @Slf4j
 public class JOLStart {
