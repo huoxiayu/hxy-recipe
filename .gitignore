@@ -4,3 +4,4 @@
 target/
 *.data
 *.spark.png
+DUMP_CLASS_FILES
