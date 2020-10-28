@@ -12,12 +12,13 @@ import java.io.IOException;
 public class OkHttpStart {
 
     public static void main(String[] args) {
-        String url = "http://www.baidu.com";
+        String url = "http://localhost:8088/api/hello";
+
         HttpClients.get(url, new Callback() {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                log.info("resp: {}", response);
+                log.info("resp header: {}, body: {}", response, response.body().string());
             }
 
             @Override
