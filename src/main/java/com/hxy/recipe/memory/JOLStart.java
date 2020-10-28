@@ -5,7 +5,6 @@ import org.openjdk.jol.info.ClassLayout;
 
 /**
  * jol（java object layout）工具实践
- * <p>
  * 1、java -XX:+PrintCommandLineFlags
  * 打印默认JVM参数，可以看到：
  * -XX:+UseCompressedClassPointers -XX:+UseCompressedOops
