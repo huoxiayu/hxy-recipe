@@ -1,16 +1,11 @@
 package com.hxy.recipe.datastructure;
 
 import com.hxy.recipe.util.BenchmarkUtil;
-import com.hxy.recipe.util.JvmUtil;
+import com.hxy.recipe.util.RandomUtil;
 import com.hxy.recipe.util.RunnableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.roaringbitmap.FastAggregation;
 import org.roaringbitmap.RoaringBitmap;
-
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * 构造roaringbitmap相对较慢，但是进行and/or运算很快
@@ -34,32 +29,26 @@ import java.util.stream.IntStream;
 @Slf4j
 public class RoaringBitMapBenchmark {
 
-    private static final int UPPER_BOUND = 3_0000_0000;
-    private static final int TIMES = 1_0000_0000;
+    private static final int CARDINALITY = 1_0000_0000;
+    private static final int LOOP_TIMES = 100;
 
     public static void main(String[] args) {
-        JvmUtil.monitor(5000L);
         long start = System.currentTimeMillis();
-        List<RoaringBitmap> bitMapList = IntStream.rangeClosed(1, 5)
-            .mapToObj(ignore -> randomRoaringBitMap())
-            .collect(Collectors.toList());
-        log.info("construct cost {} millis", System.currentTimeMillis() - start);
+        RoaringBitmap bitMap1 = randomRoaringBitMap();
+        RoaringBitmap bitMap2 = randomRoaringBitMap();
+        log.info("construct 2 big bitmap cost {} millis", System.currentTimeMillis() - start);
 
-        long cost = BenchmarkUtil.singleRun(RunnableUtil.loopRunnable(
-            () -> FastAggregation.and(bitMapList.iterator()).getCardinality(), 100)
-        );
+        log.info("bitMap1.cardinality: {}", bitMap1.getCardinality());
+        log.info("bitMap2.cardinality: {}", bitMap2.getCardinality());
+
+        long cost = BenchmarkUtil.singleRun(RunnableUtil.loopRunnable(() -> FastAggregation.and(bitMap1, bitMap2), LOOP_TIMES));
         log.info("run cost {} millis", cost);
     }
 
     private static RoaringBitmap randomRoaringBitMap() {
-        return randomRoaringBitMap(TIMES, UPPER_BOUND);
-    }
-
-    private static RoaringBitmap randomRoaringBitMap(int times, int upperBound) {
-        ThreadLocalRandom current = ThreadLocalRandom.current();
         RoaringBitmap roaringBitmap = new RoaringBitmap();
-        for (int i = 0; i < times; i++) {
-            roaringBitmap.add(current.nextInt(upperBound));
+        for (int rand : RandomUtil.randomIntArray(CARDINALITY)) {
+            roaringBitmap.add(rand);
         }
         log.info("constructed");
         return roaringBitmap;

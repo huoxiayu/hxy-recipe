@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class TraverseMapStart {
 
-    private static final int TIMES = 1000000;
+    private static final int TIMES = 10_0000;
 
     public static void main(String[] args) {
         Map<String, Integer> hashMap = new HashMap<>(TIMES);
