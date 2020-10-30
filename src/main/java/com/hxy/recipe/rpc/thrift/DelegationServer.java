@@ -7,6 +7,7 @@ import org.apache.thrift.protocol.TMessage;
 import org.apache.thrift.protocol.TMessageType;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolException;
+import com.hxy.recipe.thrift.ThriftService;
 
 @Slf4j
 public class DelegationServer {
