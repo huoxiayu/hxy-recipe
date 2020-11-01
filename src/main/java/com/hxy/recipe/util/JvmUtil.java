@@ -20,6 +20,15 @@ public final class JvmUtil {
     private static final AtomicLong MAX_HEAP_MEMORY_USED = new AtomicLong();
     private static final AtomicLong MAX_NON_HEAP_MEMORY_USED = new AtomicLong();
 
+    public static void printAllStackTrace() {
+        Thread.getAllStackTraces().forEach((thread, stackTraceList) -> {
+            log.info("thread: {}", thread.getName());
+            for (StackTraceElement stackTraceElement : stackTraceList) {
+                log.info("{}", stackTraceElement);
+            }
+        });
+    }
+
     public static void monitor(long periodInMillis) {
         SCHEDULER.scheduleAtFixedRate(() -> {
             boolean print = false;
@@ -45,6 +54,11 @@ public final class JvmUtil {
 
     private static long getNonHeapMemoryUsageInMb() {
         return ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() / MB;
+    }
+
+
+    public static void main(String[] args) {
+        printAllStackTrace();
     }
 
 }
