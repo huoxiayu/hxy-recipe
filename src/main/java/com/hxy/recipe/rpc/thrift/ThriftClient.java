@@ -1,5 +1,8 @@
 package com.hxy.recipe.rpc.thrift;
 
+import com.hxy.recipe.thrift.Request;
+import com.hxy.recipe.thrift.Response;
+import com.hxy.recipe.thrift.ThriftService;
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
