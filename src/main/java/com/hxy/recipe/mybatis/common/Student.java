@@ -9,8 +9,5 @@ public class Student {
 
     private int id;
     private String name;
-    private String hobby;
-    private String country;
-    private boolean offline;
 
 }

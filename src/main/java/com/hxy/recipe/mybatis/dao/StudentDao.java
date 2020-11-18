@@ -13,8 +13,7 @@ public interface StudentDao {
     @Select("select * from student")
     List<Student> getAllStudent();
 
-    @Insert("insert into student (name, hobby, country, offline) values " +
-        "(#{name}, #{hobby}, #{country}, #{offline})")
+    @Insert("insert into student (id, name) values (#{id}, #{name})")
     int insert(Student student);
 
 }

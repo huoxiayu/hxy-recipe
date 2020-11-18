@@ -16,12 +16,8 @@ public class MybatisStart {
         ConfigurableApplicationContext context = SpringApplication.run(RecipeApplication.class, args);
         StudentDao studentDao = context.getBean(StudentDao.class);
 
-        Student onlineStudent = Student.builder().name("x").hobby("ball").country("CN").offline(false).build();
-        int insert = studentDao.insert(onlineStudent);
-        log.info("insert: {}", insert);
-
-        Student offlineStudent = Student.builder().name("y").hobby("ping-pang").country("CN").offline(true).build();
-        insert = studentDao.insert(offlineStudent);
+        Student student = Student.builder().id(10).name("hxy10").build();
+        int insert = studentDao.insert(student);
         log.info("insert: {}", insert);
 
         List<Student> studentList = studentDao.getAllStudent();
