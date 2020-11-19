@@ -1,0 +1,9 @@
+campus:
+  schoolName: 'hxy-school'
+  clazz:
+    name: 'hxy-class'
+    students:
+      - id: 1
+        name: hxy1
+      - id: 2
+        name: hxy2

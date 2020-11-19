@@ -19,7 +19,7 @@ public class SimpleBean implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        int loop = 5;
+        int loop = 3;
         while (loop-- > 0) {
             log.info("loop: {}, foo: {}", loop, foo);
 
@@ -29,7 +29,7 @@ public class SimpleBean implements CommandLineRunner {
                 System.setProperty("foo", value);
             }
 
-            Utils.sleepInSeconds(10L);
+            Utils.sleepInSeconds(1L);
         }
         log.info("end");
     }
