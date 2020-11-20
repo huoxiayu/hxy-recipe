@@ -12,6 +12,14 @@ public final class RandomUtil {
 
     private static final int EXTEND = 10;
 
+    public static int[] sortedIntArray(int cardinality) {
+        int[] intArray = new int[cardinality];
+        for (int i = 0; i < cardinality; i++) {
+            intArray[i] = i;
+        }
+        return intArray;
+    }
+
     public static int[] randomIntArray(int cardinality) {
         return randomIntArray(cardinality, 0, cardinality * EXTEND);
     }
