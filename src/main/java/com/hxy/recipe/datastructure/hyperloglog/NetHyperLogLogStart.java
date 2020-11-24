@@ -1,4 +1,4 @@
-package com.hxy.recipe.datastructure;
+package com.hxy.recipe.datastructure.hyperloglog;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -7,14 +7,38 @@ import lombok.extern.slf4j.Slf4j;
 import net.agkn.hll.HLL;
 import org.apache.lucene.util.RamUsageEstimator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 @Slf4j
-public class HyperLogLogStart {
+public class NetHyperLogLogStart {
 
     private static final int LOG_2_M = 14;
     private static final int REG_WIDTH = 5;
     private static final int SEED = 147852369;
 
     public static void main(String[] args) {
+        int size = 100_0000;
+        int[] sortedIntArray = RandomUtil.sortedIntArray(size);
+
+        HLL hll1 = new HLL(LOG_2_M, REG_WIDTH);
+        Arrays.stream(sortedIntArray).filter(n -> n % 2 == 0).forEach(hll1::addRaw);
+        log.info("hll1 {}", hll1.cardinality());
+
+        HLL hll2 = new HLL(LOG_2_M, REG_WIDTH);
+
+        Arrays.stream(sortedIntArray).filter(n -> n % 2 == 1).forEach(hll2::addRaw);
+        log.info("hll2 {}", hll2.cardinality());
+
+        hll1.union(hll2);
+        log.info("hll1 after merge {}", hll1.cardinality());
+
+        hll();
+    }
+
+    private static void hll() {
         HLL hll1 = generateHLL(10_0000);
         HLL hll2 = generateHLL(10_0000);
 

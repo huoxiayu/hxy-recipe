@@ -65,6 +65,13 @@
             <version>3.1.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.twitter/algebird-core -->
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>algebird-core_2.12</artifactId>
+            <version>0.13.5</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.github.scopt/scopt -->
         <dependency>
             <groupId>com.github.scopt</groupId>
@@ -387,6 +394,13 @@
             <groupId>net.agkn</groupId>
             <artifactId>hll</artifactId>
             <version>1.6.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.zetasketch/zetasketch -->
+        <dependency>
+            <groupId>com.google.zetasketch</groupId>
+            <artifactId>zetasketch</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
         <dependency>
