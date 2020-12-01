@@ -7,8 +7,16 @@ import scala.util.{Failure, Success, Try}
 object DslStart {
 
 	def main(args: Array[String]): Unit = {
+		timeWatch()
 		tryDsp()
 		breakDsl()
+	}
+
+	def timeWatch(op: => Unit): Unit = {
+		val start = System.currentTimeMillis()
+		op
+		val cost = System.currentTimeMillis() - start
+		println(s"cost $cost millis")
 	}
 
 	def tryDsp(): Unit = {

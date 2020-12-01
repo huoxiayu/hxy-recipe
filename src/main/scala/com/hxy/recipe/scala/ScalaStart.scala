@@ -9,129 +9,136 @@ import scala.collection.mutable
 
 object ScalaStart extends Log {
 
-  private[ScalaStart] case class Point(x: Int, y: Int)
+	private[ScalaStart] case class Point(x: Int, y: Int)
 
-  private var name: String = _
+	private var name: String = _
 
-  def hello() = "hello"
+	def hello() = "hello"
 
-  def hello(msg: String) = s"hello $msg"
+	def hello(msg: String) = s"hello $msg"
 
-  def sayHello(msg: String): Unit = log.info(s"hi $msg")
+	def sayHello(msg: String): Unit = log.info(s"hi $msg")
 
-  def main(args: Array[String]) {
-    val javaHashMap = new JavaHashMap[String, String]()
-    javaHashMap.put("key", "value")
-    info(javaHashMap.get("key"))
+	def main(args: Array[String]) {
+		val seq1 = Seq(1, 2)
+		val seq2 = Seq(2, 3)
+		val seqMerge = seq1 ++ seq2
+		info(seq1)
+		info(seq2)
+		info(seqMerge)
 
-    val ai = new AtomicInteger(0)
-    val a, b, c = ai.getAndIncrement()
-    info(s"a: $a, b: $b, c: $c")
+		val javaHashMap = new JavaHashMap[String, String]()
+		javaHashMap.put("key", "value")
+		info(javaHashMap.get("key"))
 
-    val array = Array(1, 2, 3, 4)
-    info(s"array.toString(): $array")
+		val ai = new AtomicInteger(0)
+		val a, b, c = ai.getAndIncrement()
+		info(s"a: $a, b: $b, c: $c")
 
-    val arrayBuffer = array.toBuffer
-    info(s"arrayBuffer.toString(): $arrayBuffer")
+		val array = Array(1, 2, 3, 4)
+		info(s"array.toString(): $array")
 
-    val array_mk_string = array.mkString("-")
-    info(s"array_mk_string: $array_mk_string")
+		val arrayBuffer = array.toBuffer
+		info(s"arrayBuffer.toString(): $arrayBuffer")
 
-    lazy val lv = {
-      info("init lazy value")
-      (1 to 100).sum
-    }
+		val array_mk_string = array.mkString("-")
+		info(s"array_mk_string: $array_mk_string")
 
-    info("*" * 50)
-    info("lv is: " + lv)
+		lazy val lv = {
+			info("init lazy value")
+			(1 to 100).sum
+		}
 
-    val x, y = 3
-    info(s"x: $x, y: $y")
+		info("*" * 50)
+		info("lv is: " + lv)
 
-    val hello = "hello"
-    log.info(hello)
-    log.info(s"$hello")
+		val x, y = 3
+		info(s"x: $x, y: $y")
 
-    info(name)
-    name = "name"
-    info(name)
+		val hello = "hello"
+		log.info(hello)
+		log.info(s"$hello")
 
-    info {
-      "hello"
-    }
+		info(name)
+		name = "name"
+		info(name)
 
-    // block is expression
-    val sum = {
-      1.to(10).sum
-    }
-    info(sum)
+		info {
+			"hello"
+		}
 
-    // infix expression
-    info(1 to 10 sum)
+		// block is expression
+		val sum = {
+			1.to(10).sum
+		}
+		info(sum)
 
-    new Greeter("hello", "!").greet("scala")
+		// infix expression
+		info(1 to 10 sum)
 
-    info(Point(1, 1))
-    // both true, scala中的==用的是equals，case class默认会生成按值比较的equals方法
-    info(Point(1, 1) == Point(1, 1))
-    info(Point(1, 1).equals(Point(1, 1)))
-    // false，eq判断引用等
-    info(Point(1, 1).eq(Point(1, 1)))
+		new Greeter("hello", "!").greet("scala")
 
-    // tuple
-    val hostAndPort = ("127.0.0.1", "8080")
-    info(hostAndPort)
-    info(hostAndPort._1)
-    info(hostAndPort._2)
+		info(Point(1, 1))
+		// both true, scala中的==用的是equals，case class默认会生成按值比较的equals方法
+		info(Point(1, 1) == Point(1, 1))
+		info(Point(1, 1).equals(Point(1, 1)))
+		// false，eq判断引用等
+		info(Point(1, 1).eq(Point(1, 1)))
 
-    // deconstruction tuple
-    val (host, port) = hostAndPort
-    info(s"host:$host, port:$port")
+		// tuple
+		val hostAndPort = ("127.0.0.1", "8080")
+		info(hostAndPort)
+		info(hostAndPort._1)
+		info(hostAndPort._2)
 
-    // use -> construct tuple
-    info(1 -> 1 getClass)
+		// deconstruction tuple
+		val (host, port) = hostAndPort
+		info(s"host:$host, port:$port")
 
-    // for expression
-    val hostAndPortList = List("127.0.0.1" -> "8080", "192.168.0.1" -> "8888")
-    for ((hst, prt) <- hostAndPortList) {
-      info(s"hst:$hst, prt:$prt")
-    }
+		// use -> construct tuple
+		info(1 -> 1 getClass)
 
-    // multi for loop
-    for (i <- Seq("a", "b"); j <- 1 to 3) {
-      info(s"multi for loop i: $i, j: $j")
-    }
+		// for expression
+		val hostAndPortList = List("127.0.0.1" -> "8080", "192.168.0.1" -> "8888")
+		for ((hst, prt) <- hostAndPortList) {
+			info(s"hst:$hst, prt:$prt")
+		}
 
-    // if condition in for expression
-    for (i <- 1 to 3 if i != 2; j <- 1 to 3 if j != 2) {
-      info(s"for expression i: $i, j: $j")
-    }
+		// multi for loop
+		for (i <- Seq("a", "b"); j <- 1 to 3) {
+			info(s"multi for loop i: $i, j: $j")
+		}
 
-    val scores = new mutable.HashMap[String, Int]
-    // update method
-    scores("bob") = 59
-    // apply method
-    info(scores("bob"))
-    info(scores {
-      "bob"
-    })
-    val apply = new Apply(5)
-    info("apply(): " + apply(5))
-    info("apply{}: " + apply {
-      5
-    })
+		// if condition in for expression
+		for (i <- 1 to 3 if i != 2; j <- 1 to 3 if j != 2) {
+			info(s"for expression i: $i, j: $j")
+		}
 
-    // type String = java.lang.String
-    val string: String = "string"
-    info(string)
-  }
+		val scores = new mutable.HashMap[String, Int]
+		// update method
+		scores("bob") = 59
+		// apply method
+		info(scores("bob"))
+		info(scores {
+			"bob"
+		})
+		val apply = new Apply(5)
+		info("apply(): " + apply(5))
+		info("apply{}: " + apply {
+			5
+		})
+
+		// type String = java.lang.String
+		val string: String = "string"
+		info(string)
+	}
 
 }
 
 class Greeter(prefix: String, suffix: String) extends Log {
-  def greet(name: String): Unit = info(prefix + " " + name + suffix)
+	def greet(name: String): Unit = info(prefix + " " + name + suffix)
 }
 
 class Apply(val base: Int) {
-  def apply(i: Int): Int = base + i
+	def apply(i: Int): Int = base + i
 }
