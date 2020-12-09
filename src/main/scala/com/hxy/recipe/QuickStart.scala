@@ -27,4 +27,5 @@ object QuickStart {
 	}
 
 	1 should be(1)
+
 }

@@ -3,7 +3,7 @@ package com.hxy.recipe.scala
 /**
   * @see scala.runtime.IntRef
   */
-object ClosureStart {
+object ScalaClosureStart {
 
 	def main(args: Array[String]): Unit = {
 		var inc = 1

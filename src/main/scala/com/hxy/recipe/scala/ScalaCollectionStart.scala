@@ -5,11 +5,12 @@ import com.hxy.recipe.common.Log
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.Random
 
-object CollectionStart extends Log {
+object ScalaCollectionStart extends Log {
 
-	private[CollectionStart] case class Point(x: Int, y: Int, v: Int)
+	private[ScalaCollectionStart] case class Point(x: Int, y: Int, v: Int)
 
 	def main(args: Array[String]): Unit = {
+		zip()
 		// list()
 		// buffer()
 		// set()
@@ -17,6 +18,14 @@ object CollectionStart extends Log {
 		// collectionOp()
 		par()
 		view()
+	}
+
+	def zip(): Unit = {
+		val array1 = Array(1, 2, 3)
+		val array2 = Array("a", "b")
+		for (
+			(l, r) <- array1 zip array2
+		) println(l + "->" + r)
 	}
 
 	def par(): Unit = {

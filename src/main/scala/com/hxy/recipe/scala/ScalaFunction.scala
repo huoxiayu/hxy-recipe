@@ -6,7 +6,7 @@ import com.hxy.recipe.common.Log
 
 import scala.math._
 
-object FunctionStart extends Log {
+object ScalaFunction extends Log {
 
 	def notImplementedMethod(i: Int): Int = ???
 
@@ -34,6 +34,12 @@ object FunctionStart extends Log {
 	def decorate(msg: String, left: String = "[", right: String = "]"): String = left + msg + right
 
 	def main(args: Array[String]): Unit = {
+		val plusFunc = (_: Int) + (_: Int) + (_: Int)
+		println(plusFunc(1, 2, 3))
+
+		val partitionPlusFunc = plusFunc(_: Int, 1, 1)
+		println(partitionPlusFunc(5))
+
 		// create partial function by case statement
 		val doubleEvens: PartialFunction[Int, Int] = {
 			case x if (x % 2) == 0 => x * 2
