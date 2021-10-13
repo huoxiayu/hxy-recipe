@@ -13,6 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentHashMapAndConcurrentSkipListMap {
 
     public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            run();
+        }
+    }
+
+    private static void run() {
         int len = 500_0000;
         List<Integer> numList = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
@@ -23,13 +29,26 @@ public class ConcurrentHashMapAndConcurrentSkipListMap {
         long concurrentHashMapTime = BenchmarkUtil.multiRun(() -> {
             numList.forEach(num -> concurrentHashMap.put(num, num));
         });
-        log.info("concurrentHashMap cost {} millis size {}", concurrentHashMapTime, concurrentHashMap.size());
+        log.info("concurrentHashMap add cost {} millis size {}", concurrentHashMapTime, concurrentHashMap.size());
 
         ConcurrentSkipListMap<Integer, Integer> concurrentSkipListMap = new ConcurrentSkipListMap<>();
         long concurrentSkipListMapTime = BenchmarkUtil.multiRun(() -> {
             numList.forEach(num -> concurrentSkipListMap.put(num, num));
         });
-        log.info("concurrentSkipListMap cost {} millis size {}", concurrentSkipListMapTime, concurrentSkipListMap.size());
+        log.info("concurrentSkipListMap add cost {} millis size {}", concurrentSkipListMapTime, concurrentSkipListMap.size());
+        long concurrentHashMapGetTime = BenchmarkUtil.multiRun(() -> {
+            for (int i = 0; i < len; i++) {
+                concurrentHashMap.get(i);
+            }
+        });
+        log.info("concurrentHashMap get cost {} millis size {}", concurrentHashMapGetTime, concurrentHashMap.size());
+
+        long concurrentSkipListGetTime = BenchmarkUtil.multiRun(() -> {
+            for (int i = 0; i < len; i++) {
+                concurrentSkipListMap.get(i);
+            }
+        });
+        log.info("concurrentSkipList get cost {} millis size {}", concurrentSkipListGetTime, concurrentHashMap.size());
 
         AtomicInteger hashSum = new AtomicInteger();
         long hashRetrieveTime = BenchmarkUtil.multiRun(() -> {
@@ -42,6 +61,7 @@ public class ConcurrentHashMapAndConcurrentSkipListMap {
             skipListSum.addAndGet(concurrentSkipListMap.values().stream().mapToInt(Integer::intValue).sum());
         });
         log.info("concurrentSkipListMap cost {} millis sum {}", skipListRetrieveTime, skipListSum);
+        log.info("<---------------------------->");
     }
 
 }
