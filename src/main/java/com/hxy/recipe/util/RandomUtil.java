@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor
 public final class RandomUtil {
 
-    private static final int EXTEND = 10;
+    private static final int EXTEND = 100;
 
     public static int[] sortedIntArray(int cardinality) {
         int[] intArray = new int[cardinality];
