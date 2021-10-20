@@ -450,6 +450,13 @@
             <artifactId>hyperminhash</artifactId>
             <version>0.2</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.terracotta/offheap-store -->
+        <dependency>
+            <groupId>org.terracotta</groupId>
+            <artifactId>offheap-store</artifactId>
+            <version>2.5.2</version>
+        </dependency>
     </dependencies>
 
     <build>
