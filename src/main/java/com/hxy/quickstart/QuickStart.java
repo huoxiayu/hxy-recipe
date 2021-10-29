@@ -32,11 +32,6 @@ public class QuickStart {
         String sign = DigestUtils.sha1Hex(joinKey);
         System.out.println(sign);
 
-
-
-
-
-
         log.info("", ExceptionUtils.getStackTrace(new Exception()));
 
         StopWatch sw = new StopWatch();

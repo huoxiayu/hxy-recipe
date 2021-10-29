@@ -49,6 +49,7 @@ public class ReservoirStart {
 
         Snapshot snapshot = reservoir.getSnapshot();
         log.info("{} min {}", reservoir.getClass().getSimpleName(), snapshot.getMin());
+        log.info("{} mean {}", reservoir.getClass().getSimpleName(), snapshot.getMean());
         log.info("{} p75 {}", reservoir.getClass().getSimpleName(), snapshot.get75thPercentile());
         log.info("{} p95 {}", reservoir.getClass().getSimpleName(), snapshot.get95thPercentile());
         log.info("{} p99 {}", reservoir.getClass().getSimpleName(), snapshot.get99thPercentile());
