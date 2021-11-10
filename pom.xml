@@ -463,6 +463,21 @@
             <artifactId>java-diff-utils</artifactId>
             <version>4.9</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.koloboke/koloboke-api-jdk8 -->
+        <dependency>
+            <groupId>com.koloboke</groupId>
+            <artifactId>koloboke-api-jdk8</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.koloboke/koloboke-impl-jdk8 -->
+        <dependency>
+            <groupId>com.koloboke</groupId>
+            <artifactId>koloboke-impl-jdk8</artifactId>
+            <version>1.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
