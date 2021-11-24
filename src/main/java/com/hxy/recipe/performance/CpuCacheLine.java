@@ -22,7 +22,7 @@ public class CpuCacheLine {
                 }
             }
         });
-        System.out.println(cost1);  // 33
+        System.out.println("cache line hit cost " + cost1);  // 33
 
         long cost2 = BenchmarkUtil.singleRun(() -> {
             for (int j = 0; j < m; j++) {
@@ -31,7 +31,7 @@ public class CpuCacheLine {
                 }
             }
         });
-        System.out.println(cost2);  // 530
+        System.out.println("cache line miss cost " + cost2);  // 530
     }
 
     private static void falseSharing() {
@@ -46,7 +46,7 @@ public class CpuCacheLine {
                     tList[0].v = i;
                 }
             });
-            System.out.println("cost -> " + cost);
+            System.out.println("write1 cost -> " + cost);
         });
 
         Thread write2 = new Thread(() -> {
@@ -55,7 +55,7 @@ public class CpuCacheLine {
                     tList[1].v = i;
                 }
             });
-            System.out.println("cost -> " + cost);
+            System.out.println("write2 cost -> " + cost);
         });
 
         write1.start();
