@@ -6,6 +6,8 @@ public class CpuCacheLine {
 
     public static void main(String[] args) {
         cpuCache();
+
+        falseSharing();
     }
 
     private static void cpuCache() {
@@ -30,6 +32,45 @@ public class CpuCacheLine {
             }
         });
         System.out.println(cost2);  // 530
+    }
+
+    private static void falseSharing() {
+        int times = 1_0000_0000;
+        T[] tList = new T[2];
+        tList[0] = new T();
+        tList[1] = new T();
+
+        Thread write1 = new Thread(() -> {
+            long cost = BenchmarkUtil.singleRun(() -> {
+                for (int i = 0; i < times; i++) {
+                    tList[0].v = i;
+                }
+            });
+            System.out.println("cost -> " + cost);
+        });
+
+        Thread write2 = new Thread(() -> {
+            long cost = BenchmarkUtil.singleRun(() -> {
+                for (int i = 0; i < times; i++) {
+                    tList[1].v = i;
+                }
+            });
+            System.out.println("cost -> " + cost);
+        });
+
+        write1.start();
+        write2.start();
+    }
+
+    // @jdk.internal.vm.annotation.Contended
+    private static class T {
+
+        private long p1, p2, p3, p4, p5, p6, p7 = 0L;
+
+        private volatile long v = 0L;
+
+        private long p11, p12, p13, p14, p15, p16, p17 = 0L;
+
     }
 
 }
