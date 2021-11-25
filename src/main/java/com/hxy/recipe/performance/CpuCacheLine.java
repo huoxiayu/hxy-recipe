@@ -2,6 +2,7 @@ package com.hxy.recipe.performance;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 
+// cpu缓存对性能的影响
 public class CpuCacheLine {
 
     public static void main(String[] args) {
