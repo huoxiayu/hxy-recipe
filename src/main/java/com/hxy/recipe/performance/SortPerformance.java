@@ -1,4 +1,4 @@
-package com.hxy.algo.performance;
+package com.hxy.recipe.performance;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 import lombok.extern.slf4j.Slf4j;

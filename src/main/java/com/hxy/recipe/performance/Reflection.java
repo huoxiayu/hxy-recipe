@@ -1,4 +1,4 @@
-package com.hxy.algo.performance;
+package com.hxy.recipe.performance;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 import com.hxy.recipe.util.RunnableUtil;
