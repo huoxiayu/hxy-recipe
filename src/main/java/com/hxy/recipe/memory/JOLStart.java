@@ -2,10 +2,14 @@ package com.hxy.recipe.memory;
 
 import jdk.internal.vm.annotation.Contended;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openjdk.jol.info.ClassLayout;
+import org.openjdk.jol.info.GraphLayout;
 import org.openjdk.jol.vm.VM;
 import org.openjdk.jol.vm.VirtualMachine;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -116,10 +120,21 @@ public class JOLStart {
         printObjectLayout("ContentOnField", new ContentOnField());
         printObjectLayout("ContentOnEveryField", new ContentOnEveryField());
         printObjectLayout("ContentOnGroup", new ContentOnGroup());
+
+        printGraphLayout("Pair.of(Int, Str)", Pair.of(1L, "str"));
+
+        Map<Integer, Map<Long, String>> int2Long2Str = new HashMap<>();
+        int2Long2Str.computeIfAbsent(1, any -> new HashMap<>()).put(100L, "one-zero-zero");
+        int2Long2Str.computeIfAbsent(2, any -> new HashMap<>()).put(200L, "two-zero-zero");
+        printGraphLayout("int2Long2Str", int2Long2Str);
     }
 
     private static void printObjectLayout(String prompt, Object object) {
         log.info(" " + prompt + " with " + ClassLayout.parseInstance(object).toPrintable() + "\n");
+    }
+
+    private static void printGraphLayout(String prompt, Object object) {
+        log.info(" " + prompt + " with " + GraphLayout.parseInstance(object).toPrintable() + "\n");
     }
 
 }
