@@ -64,6 +64,12 @@ public class CpuCacheLine {
     }
 
     // @jdk.internal.vm.annotation.Contended
+
+    /**
+     * @see java.lang.Thread#threadLocalRandomSeed
+     * @see java.lang.Thread#threadLocalRandomProbe
+     * @see java.lang.Thread#threadLocalRandomSecondarySeed
+     */
     private static class T {
 
         private long p1, p2, p3, p4, p5, p6, p7 = 0L;
