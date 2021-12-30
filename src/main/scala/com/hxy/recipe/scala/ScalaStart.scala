@@ -9,136 +9,183 @@ import scala.collection.mutable
 
 object ScalaStart extends Log {
 
-	private[ScalaStart] case class Point(x: Int, y: Int)
+  private[ScalaStart] case class Point(x: Int, y: Int)
 
-	private var name: String = _
+  private var name: String = _
 
-	def hello() = "hello"
+  def hello() = "hello"
 
-	def hello(msg: String) = s"hello $msg"
+  def hello(msg: String) = s"hello $msg"
 
-	def sayHello(msg: String): Unit = log.info(s"hi $msg")
+  def sayHello(msg: String): Unit = log.info(s"hi $msg")
 
-	def main(args: Array[String]) {
-		val seq1 = Seq(1, 2)
-		val seq2 = Seq(2, 3)
-		val seqMerge = seq1 ++ seq2
-		info(seq1)
-		info(seq2)
-		info(seqMerge)
 
-		val javaHashMap = new JavaHashMap[String, String]()
-		javaHashMap.put("key", "value")
-		info(javaHashMap.get("key"))
+  def main(args: Array[String]): Unit = {
+    // partial function
+    val partialFunc: PartialFunction[String, String] = {
+      case str: String if str.nonEmpty => s"(${str})"
+    }
 
-		val ai = new AtomicInteger(0)
-		val a, b, c = ai.getAndIncrement()
-		info(s"a: $a, b: $b, c: $c")
+    try {
+      println(partialFunc(""))
+    } catch {
+      case e: Throwable => println(e)
+    }
 
-		val array = Array(1, 2, 3, 4)
-		info(s"array.toString(): $array")
+    val abs: Int => Int = (n: Int) => if (n > 0) n else -n
+    println("abs:" + abs)
+    println("abs(-3):" + abs(-3))
 
-		val arrayBuffer = array.toBuffer
-		info(s"arrayBuffer.toString(): $arrayBuffer")
+    val absRef: Int => Int = abs
+    println("absRef:" + absRef)
+    println("absRef(-3):" + absRef(-3))
 
-		val array_mk_string = array.mkString("-")
-		info(s"array_mk_string: $array_mk_string")
+    def abs2(n: Int) = if (n > 0) n else -n
 
-		lazy val lv = {
-			info("init lazy value")
-			(1 to 100).sum
-		}
+    val abs2Ref = abs2 _
+    println("abs2Ref:" + abs2Ref)
+    println("abs2Ref(-3):" + abs2Ref(-3))
 
-		info("*" * 50)
-		info("lv is: " + lv)
+    // match expression
+    def matchString(str: String): String = {
+      str match {
+        case "1" => "1"
+        case _ => "on!"
+      }
+    }
 
-		val x, y = 3
-		info(s"x: $x, y: $y")
+    println("matchString: " + matchString("1"))
+    println("matchString: " + matchString("?"))
 
-		val hello = "hello"
-		log.info(hello)
-		log.info(s"$hello")
+    // for expression
+    val listOfSeq = List(Seq(1, 2, 3), Seq(4, 5, 6), Seq())
+    for (seq <- listOfSeq
+         if seq.nonEmpty;
+         item <- seq
+         if item % 2 == 0;
+         itemPlusOne = item + 1) {
+      println(itemPlusOne)
+    }
 
-		info(name)
-		name = "name"
-		info(name)
+    val seq1 = Seq(1, 2)
+    val seq2 = Seq(2, 3)
+    val seqMerge = seq1 ++ seq2
+    info(seq1)
+    info(seq2)
+    info(seqMerge)
 
-		info {
-			"hello"
-		}
+    val javaHashMap = new JavaHashMap[String, String]()
+    javaHashMap.put("key", "value")
+    info(javaHashMap.get("key"))
 
-		// block is expression
-		val sum = {
-			1.to(10).sum
-		}
-		info(sum)
+    val ai = new AtomicInteger(0)
+    val a, b, c = ai.getAndIncrement()
+    info(s"a: $a, b: $b, c: $c")
 
-		// infix expression
-		info(1 to 10 sum)
+    val array = Array(1, 2, 3, 4)
+    info(s"array.toString(): $array")
 
-		new Greeter("hello", "!").greet("scala")
+    val arrayBuffer = array.toBuffer
+    info(s"arrayBuffer.toString(): $arrayBuffer")
 
-		info(Point(1, 1))
-		// both true, scala中的==用的是equals，case class默认会生成按值比较的equals方法
-		info(Point(1, 1) == Point(1, 1))
-		info(Point(1, 1).equals(Point(1, 1)))
-		// false，eq判断引用等
-		info(Point(1, 1).eq(Point(1, 1)))
+    val array_mk_string = array.mkString("-")
+    info(s"array_mk_string: $array_mk_string")
 
-		// tuple
-		val hostAndPort = ("127.0.0.1", "8080")
-		info(hostAndPort)
-		info(hostAndPort._1)
-		info(hostAndPort._2)
+    lazy val lv = {
+      info("init lazy value")
+      (1 to 100).sum
+    }
 
-		// deconstruction tuple
-		val (host, port) = hostAndPort
-		info(s"host:$host, port:$port")
+    info("*" * 50)
+    info("lv is: " + lv)
 
-		// use -> construct tuple
-		info(1 -> 1 getClass)
+    val x, y = 3
+    info(s"x: $x, y: $y")
 
-		// for expression
-		val hostAndPortList = List("127.0.0.1" -> "8080", "192.168.0.1" -> "8888")
-		for ((hst, prt) <- hostAndPortList) {
-			info(s"hst:$hst, prt:$prt")
-		}
+    val hello = "hello"
+    log.info(hello)
+    log.info(s"$hello")
 
-		// multi for loop
-		for (i <- Seq("a", "b"); j <- 1 to 3) {
-			info(s"multi for loop i: $i, j: $j")
-		}
+    info(name)
+    name = "name"
+    info(name)
 
-		// if condition in for expression
-		for (i <- 1 to 3 if i != 2; j <- 1 to 3 if j != 2) {
-			info(s"for expression i: $i, j: $j")
-		}
+    info {
+      "hello"
+    }
 
-		val scores = new mutable.HashMap[String, Int]
-		// update method
-		scores("bob") = 59
-		// apply method
-		info(scores("bob"))
-		info(scores {
-			"bob"
-		})
-		val apply = new Apply(5)
-		info("apply(): " + apply(5))
-		info("apply{}: " + apply {
-			5
-		})
+    // block is expression
+    val sum = {
+      1.to(10).sum
+    }
+    info(sum)
 
-		// type String = java.lang.String
-		val string: String = "string"
-		info(string)
-	}
+    // infix expression
+    info(1 to 10 sum)
+
+    new Greeter("hello", "!").greet("scala")
+
+    info(Point(1, 1))
+    // both true, scala中的==用的是equals，case class默认会生成按值比较的equals方法
+    info(Point(1, 1) == Point(1, 1))
+    info(Point(1, 1).equals(Point(1, 1)))
+    // false，eq判断引用等
+    info(Point(1, 1).eq(Point(1, 1)))
+
+    // tuple
+    val hostAndPort = ("127.0.0.1", "8080")
+    info(hostAndPort)
+    info(hostAndPort._1)
+    info(hostAndPort._2)
+
+    // deconstruction tuple
+    val (host, port) = hostAndPort
+    info(s"host:$host, port:$port")
+
+    // use -> construct tuple
+    info(1 -> 1 getClass)
+
+    // for expression
+    val hostAndPortList = List("127.0.0.1" -> "8080", "192.168.0.1" -> "8888")
+    for ((hst, prt) <- hostAndPortList) {
+      info(s"hst:$hst, prt:$prt")
+    }
+
+    // multi for loop
+    for (i <- Seq("a", "b"); j <- 1 to 3) {
+      info(s"multi for loop i: $i, j: $j")
+    }
+
+    // if condition in for expression
+    for (i <- 1 to 3 if i != 2; j <- 1 to 3 if j != 2) {
+      info(s"for expression i: $i, j: $j")
+    }
+
+    val scores = new mutable.HashMap[String, Int]
+    // update method
+    scores("bob") = 59
+    // apply method
+    info(scores("bob"))
+    info(scores {
+      "bob"
+    })
+    val apply = new Apply(5)
+    info("apply(): " + apply(5))
+    info("apply{}: " + apply {
+      5
+    })
+
+    // type String = java.lang.String
+    val string: String = "string"
+    info(string)
+  }
 
 }
 
 class Greeter(prefix: String, suffix: String) extends Log {
-	def greet(name: String): Unit = info(prefix + " " + name + suffix)
+  def greet(name: String): Unit = info(prefix + " " + name + suffix)
 }
 
 class Apply(val base: Int) {
-	def apply(i: Int): Int = base + i
+  def apply(i: Int): Int = base + i
 }
