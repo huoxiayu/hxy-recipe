@@ -7,8 +7,6 @@ import com.koloboke.collect.map.hash.HashIntIntMaps;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 
-import java.util.Map;
-
 public class FastCollectionStart {
 
     private static final int WARM_UP_TIMES = 10;
@@ -24,25 +22,9 @@ public class FastCollectionStart {
     }
 
     private static void run() {
-        hppc();
         eclipse();
         fastUtil();
         koloboke();
-    }
-
-    private static void hppc() {
-        com.carrotsearch.hppc.IntLongHashMap hppcMap = new com.carrotsearch.hppc.IntLongHashMap();
-        BenchmarkUtil.singleRun(() -> {
-            for (int i = 0; i < TIMES; i++) {
-                hppcMap.put(i, i);
-            }
-        }, "hppc-map-put");
-
-        BenchmarkUtil.singleRun(() -> {
-            for (int i = 0; i < TIMES; i++) {
-                hppcMap.get(i);
-            }
-        }, "hppc-map-get");
     }
 
     private static void eclipse() {

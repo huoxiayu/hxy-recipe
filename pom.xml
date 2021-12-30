@@ -19,7 +19,7 @@
         <java.version>11</java.version>
         <kotlin.version>1.5.32</kotlin.version>
         <scala.version>2.12.7</scala.version>
-        <spark.version>2.4.0</spark.version>
+        <spark.version>3.1.0</spark.version>
         <akka.version>2.5.18</akka.version>
         <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
         <grpc.version>1.9.0</grpc.version>
