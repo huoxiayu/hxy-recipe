@@ -25,7 +25,7 @@ object TraitStart extends Log {
 trait Queue {
 	def get(): Seq[Int]
 
-	def put(i: Int)
+	def put(i: Int): Unit
 }
 
 class BasicQueue extends Queue {
