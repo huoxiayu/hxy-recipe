@@ -6,15 +6,41 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.util.StopWatch;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class QuickStart {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        String url = "jdbc:mysql://localhost:3306/hxy?user=root＆password=root";
+
+        log.info("1");
+        try {
+            DriverManager.getConnection(url);
+        } catch (Exception e) {
+
+        }
+
+        log.info("2");
+
+        TimeUnit.SECONDS.sleep(30L);
+
+        log.info("3");
+
+        try {
+            DriverManager.getConnection(url);
+        } catch (Exception e) {
+
+        }
+
+        log.info("4");
+
         String client_id = "some_client_id";
         String timestamp = String.valueOf(System.currentTimeMillis());
         String nonce = String.valueOf(ThreadLocalRandom.current().nextLong(100));
@@ -46,6 +72,8 @@ public class QuickStart {
 
         log.info("last task time millis {}", sw.getLastTaskTimeMillis());
         log.info("total millis {}", sw.getTotalTimeMillis());
+
+        TimeUnit.SECONDS.sleep(30000L);
     }
 
 }
