@@ -6,3 +6,4 @@ target/
 *.spark.png
 DUMP_CLASS_FILES
 *.diff
+*.log

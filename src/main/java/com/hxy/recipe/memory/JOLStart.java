@@ -95,6 +95,8 @@ public class JOLStart {
         VirtualMachine vm = VM.current();
         log.info("{}", vm.details());
 
+        printObjectLayout("longArray", new long[]{});
+
         int[] intArray16 = new int[16];
         printObjectLayout("intArray16", intArray16);
 

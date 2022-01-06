@@ -55,12 +55,14 @@ public final class Utils {
     }
 
     public static void sleepInMillis(long timeInMillis) {
+        log.info("sleep begin");
         try {
             if (timeInMillis > 0L) {
                 TimeUnit.MILLISECONDS.sleep(timeInMillis);
             }
         } catch (InterruptedException ignored) {
         }
+        log.info("sleep end");
     }
 
     public static void sleepInSeconds(long timeInSeconds) {
