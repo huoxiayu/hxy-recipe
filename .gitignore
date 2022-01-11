@@ -7,3 +7,9 @@ target/
 DUMP_CLASS_FILES
 *.diff
 *.log
+*.parquet/
+tmp/
+tmp_parquet/
+tmp_sequence/
+tmp_json/
+
