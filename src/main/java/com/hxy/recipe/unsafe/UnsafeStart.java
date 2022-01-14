@@ -1,5 +1,6 @@
 package com.hxy.recipe.unsafe;
 
+import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import jdk.internal.misc.Unsafe;
 
@@ -24,7 +25,7 @@ public class UnsafeStart {
     }
 
     public static void main(String[] args) throws InstantiationException {
-        Unsafe unsafe = getUnsafe();
+        Unsafe unsafe = Utils.getUnsafe();
         log.info("unsafe {}", unsafe);
 
         // big-endian
@@ -69,22 +70,6 @@ public class UnsafeStart {
 
         // throw exception
         new A();
-    }
-
-    // get unsafe by reflect
-    private static Unsafe getUnsafe() {
-        try {
-            return Unsafe.getUnsafe();
-        } catch (Exception e) {
-            log.error("direct get unsafe fail:", e);
-            try {
-                Field field = Unsafe.class.getDeclaredField("theUnsafe");
-                field.setAccessible(true);
-                return (Unsafe) field.get(null);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
     }
 
 }

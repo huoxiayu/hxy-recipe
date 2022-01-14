@@ -6,9 +6,6 @@ import lombok.Data;
 public class InnerBean {
 
     private int innerInt;
-    private long innerLong;
-    private boolean innerBool;
-    private double innerDouble;
     private String innerString;
 
 }

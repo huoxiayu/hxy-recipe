@@ -1,9 +1,11 @@
 package com.hxy.recipe.util;
 
+import jdk.internal.misc.Unsafe;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -83,6 +85,21 @@ public final class Utils {
                 throw new AssertionError(err);
             } else {
                 log.info("assert ex {} success", e.getClass().getSimpleName());
+            }
+        }
+    }
+
+    public static Unsafe getUnsafe() {
+        try {
+            return Unsafe.getUnsafe();
+        } catch (Exception e) {
+            log.error("direct get unsafe fail:", e);
+            try {
+                Field field = Unsafe.class.getDeclaredField("theUnsafe");
+                field.setAccessible(true);
+                return (Unsafe) field.get(null);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
         }
     }

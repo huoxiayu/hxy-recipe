@@ -12,4 +12,5 @@ tmp/
 tmp_parquet/
 tmp_sequence/
 tmp_json/
+binary_list
 

@@ -18,12 +18,14 @@ import java.util.concurrent.TimeUnit;
 public class QuickStart {
 
     public static void main(String[] args) throws Exception {
+        log.info("java.tmp.dir -> {}", System.getProperty("java.io.tmpdir"));
+
         String url = "jdbc:mysql://localhost:3306/hxy?user=root＆password=root";
 
         log.info("1");
         try {
             DriverManager.getConnection(url);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 
