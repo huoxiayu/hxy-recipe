@@ -1,54 +1,113 @@
 package com.hxy.recipe.stream;
 
-import lombok.AllArgsConstructor;
+import com.hxy.recipe.util.BenchmarkUtil;
+import com.hxy.recipe.util.RunnableUtil;
+import com.hxy.recipe.util.Utils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Spliterator;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Slf4j
 public class StreamStart {
 
+    private static final int LEN = 1000_0000;
+    private static final int TIMES = 10;
+
     @Data
-    @AllArgsConstructor
     private static class Bean {
-        private String key;
-        private List<String> values;
+        private String p1;
+        private int p2;
+        private long p3;
+        private boolean p4;
+        private double p5;
+        private int v;
+
+        public Bean() {
+            ThreadLocalRandom rand = ThreadLocalRandom.current();
+            String uuid = UUID.randomUUID().toString();
+            this.p1 = uuid.substring(rand.nextInt(uuid.length()));
+            this.p2 = rand.nextInt();
+            this.p3 = rand.nextLong();
+            this.p4 = rand.nextBoolean();
+            this.p5 = rand.nextDouble();
+            this.v = rand.nextInt();
+        }
     }
 
     public static void main(String[] args) {
-        collect2Map();
-        peek();
+        System.out.println(Spliterator.DISTINCT);
+        System.out.println(Spliterator.SORTED);
+        System.out.println(Spliterator.ORDERED);
+        System.out.println(Spliterator.SIZED);
+        System.out.println(Spliterator.NONNULL);
+        System.out.println(Spliterator.IMMUTABLE);
+        System.out.println(Spliterator.CONCURRENT);
+        System.out.println(Spliterator.SUBSIZED);
+
+        Stream.of(1, 2).filter(i -> i % 2 == 0).forEach(System.out::println);
+
+        // performance();
     }
 
-    private static void collect2Map() {
-        List<Bean> beans = List.of(
-            new Bean("key1", List.of("value1", "values11")),
-            new Bean("key1", List.of("value111", "values1111")),
-            new Bean("key2", List.of("value2")),
-            new Bean("key2", List.of("value2")),
-            new Bean("key3", List.of("value3"))
-        );
-        log.info("{}", beans);
+    private static void performance() {
+        List<Bean> beans = new ArrayList<>(LEN);
+        for (int i = 0; i < LEN; i++) {
+            beans.add(new Bean());
+        }
 
-        Map<String, List<String>> key2Values =
-            beans.stream().collect(Collectors.toMap(Bean::getKey, Bean::getValues, (values1, values2) -> {
-                List<String> merge = new ArrayList<>(values1);
-                merge.addAll(values2);
-                return merge;
-            }));
-        log.info("{}", key2Values);
+        log.info("init beans");
+
+        Runnable loop = RunnableUtil.loopRunnable(() -> loop(beans), TIMES);
+
+        Runnable stream = RunnableUtil.loopRunnable(() -> stream(beans), TIMES);
+
+        loop.run();
+        log.info("loop warmup");
+
+        stream.run();
+        log.info("stream warmup");
+
+        Utils.sleepInSeconds(30L);
+
+        // loop cost 2035 millis
+        BenchmarkUtil.singleRun(loop, "loop");
+
+        // stream cost 3513 millis
+        BenchmarkUtil.singleRun(stream, "stream");
     }
 
-    private static void peek() {
-        List<Bean> beans = List.of(new Bean("k1", List.of("v1")));
-        log.info("{}", beans);
+    private static void stream(List<Bean> beans) {
+        IntStream intStream = beans.stream()
+                .filter(b1 -> b1.p1.length() >= 3)
+                .filter(b2 -> b2.p2 % 31 >= 0)
+                .filter(b3 -> b3.p3 % 71L >= 0L)
+                .filter(b4 -> b4.p4)
+                .filter(b5 -> b5.p5 > 1e-5)
+                .mapToInt(x -> x.v);
+        int sum = intStream
+                .sum();
+        log.info("sum -> {}", sum);
+    }
 
-        List<Bean> result = beans.stream().peek(b -> b.setKey(b.getKey() + ".key")).collect(Collectors.toList());
-        log.info("{}", result);
+    private static void loop(List<Bean> beans) {
+        int sum = 0;
+        for (Bean bean : beans) {
+            if (bean.p1.length() >= 3
+                    && bean.p2 % 31 >= 0
+                    && bean.p3 % 71L >= 0L
+                    && bean.p4 && bean.p5 > 1e-5) {
+                sum += bean.v;
+            }
+        }
+
+        log.info("sum -> {}", sum);
     }
 
 }

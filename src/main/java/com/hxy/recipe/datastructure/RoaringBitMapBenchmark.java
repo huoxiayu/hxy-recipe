@@ -24,12 +24,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class RoaringBitMapBenchmark {
 
-    private static final int CARDINALITY = 100_0000;
+    private static final int CARDINALITY = 1000_0000;
     private static final int LOOP_TIMES = 1;
 
     public static void main(String[] args) {
         // test();
-        size();
+        // size();
         performance();
     }
 
