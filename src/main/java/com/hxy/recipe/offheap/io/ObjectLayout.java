@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * IDEA vm options add below line:
+ * IDEA Perferences -> Compiler -> Java Compiler add below line:
  * --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED
  */
 @Slf4j

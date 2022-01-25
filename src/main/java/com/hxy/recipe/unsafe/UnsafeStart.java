@@ -1,10 +1,14 @@
 package com.hxy.recipe.unsafe;
 
 import com.hxy.recipe.util.Utils;
-import lombok.extern.slf4j.Slf4j;
 import jdk.internal.misc.Unsafe;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.openjdk.jol.info.ClassLayout;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * IDEA vm options add below line:
@@ -13,20 +17,15 @@ import java.lang.reflect.Field;
 @Slf4j
 public class UnsafeStart {
 
-    private static class A {
-        private A() {
-            throw new RuntimeException("not support A");
-        }
+    public static void main(String[] args) {
+        // unsafe();
 
-        @Override
-        public String toString() {
-            return "A:" + super.toString();
-        }
+        unsafeArray();
     }
 
-    public static void main(String[] args) throws InstantiationException {
+    @SneakyThrows
+    private static void unsafe() {
         Unsafe unsafe = Utils.getUnsafe();
-        log.info("unsafe {}", unsafe);
 
         // big-endian
         log.info("unsafe.isBigEndian() {}", unsafe.isBigEndian());
@@ -70,6 +69,71 @@ public class UnsafeStart {
 
         // throw exception
         new A();
+    }
+
+    private static void unsafeArray() {
+        ArrayItem[] arrayItems = new ArrayItem[4];
+        arrayItems[0] = new ArrayItem(1, true, "first");
+        arrayItems[1] = new ArrayItem(2, false, "second");
+        arrayItems[2] = null;
+        arrayItems[3] = null;
+        log.info("arrayItems -> {}", Arrays.toString(arrayItems));
+
+        unsafeArrayForeach(arrayItems);
+    }
+
+    private static void unsafeArrayForeach(ArrayItem[] arrayItems) {
+        Unsafe unsafe = Utils.getUnsafe();
+
+        int arrayBaseOffset = unsafe.arrayBaseOffset(ArrayItem[].class);
+        int scale = unsafe.arrayIndexScale(ArrayItem[].class);
+        int aShift = 31 - Integer.numberOfLeadingZeros(scale);
+        log.info("arrayBaseOffset -> {}", arrayBaseOffset);
+        log.info("scale -> {}", scale);
+        log.info("aShift -> {}", aShift);
+
+        for (int i = 0; i < arrayItems.length; i++) {
+            long shift = (long) i << aShift;
+            long offset = arrayBaseOffset + shift;
+            Object obj = unsafe.getObjectAcquire(arrayItems, offset);
+            log.info("shift -> {}, obj -> {}", shift, obj);
+        }
+
+        long integerOffset = unsafe.objectFieldOffset(ArrayItem.class, "integer");
+        long boolOffset = unsafe.objectFieldOffset(ArrayItem.class, "bool");
+        long strOffset = unsafe.objectFieldOffset(ArrayItem.class, "str");
+        log.info("integerOffSet -> {}", integerOffset);
+        log.info("boolOffset -> {}", boolOffset);
+        log.info("strOffset -> {}", strOffset);
+
+        int int1 = unsafe.getInt(arrayItems, arrayBaseOffset + ((long) 0 << aShift) + integerOffset);
+        int int2 = unsafe.getInt(arrayItems, arrayBaseOffset + ((long) 1 << aShift) + integerOffset);
+        log.info("int1 -> {}, int2 -> {}", int1, int2);
+
+        boolean bool1 = unsafe.getBoolean(arrayItems, arrayBaseOffset + ((long) 0 << aShift) + boolOffset);
+        boolean bool2 = unsafe.getBoolean(arrayItems, arrayBaseOffset + ((long) 1 << aShift) + boolOffset);
+        log.info("bool1 -> {}, bool2 -> {}", bool1, bool2);
+    }
+
+    private static class A {
+        private A() {
+            throw new RuntimeException("not support A");
+        }
+
+        @Override
+        public String toString() {
+            return "A:" + super.toString();
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class ArrayItem {
+
+        private final int integer;
+        private final boolean bool;
+        private final String str;
+
     }
 
 }

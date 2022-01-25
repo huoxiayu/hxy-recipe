@@ -7,9 +7,19 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
- * -Xms20M
- * -Xmx20M
- * -XX:+TieredCompilation
+ *
+ * -Xint -> 2000
+ *
+ * c1 & c2 -> 83209
+ *
+ * -XX:+UnlockExperimentalVMOptions
+ * -XX:+UseJVMCICompiler -> 76228
+ *
+ * -XX:+UnlockDiagnosticVMOptions
+ * -XX:+PrintInlining
+ * -XX:+PrintCompilation
+ *
+ * -XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly
  */
 public class Loop {
 

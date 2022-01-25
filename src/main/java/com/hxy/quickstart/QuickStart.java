@@ -7,10 +7,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.util.StopWatch;
 
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
 public class QuickStart {
 
     public static void main(String[] args) throws Exception {
+        ConcurrentHashMap<String, String> s2s = new ConcurrentHashMap<>(10_000);
+
+        s2s.put("", "");
+
         log.info("java.tmp.dir -> {}", System.getProperty("java.io.tmpdir"));
 
         String url = "jdbc:mysql://localhost:3306/hxy?user=root＆password=root";

@@ -28,6 +28,7 @@
         <guava.version>23.0</guava.version>
         <collections.version>4.0</collections.version>
         <jackson.version>2.10.1</jackson.version>
+        <jmh.version>1.33</jmh.version>
     </properties>
 
     <dependencyManagement>
@@ -510,7 +511,7 @@
         <dependency>
             <groupId>io.github.java-diff-utils</groupId>
             <artifactId>java-diff-utils</artifactId>
-            <version>4.9</version>
+            <version>4.11</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.koloboke/koloboke-api-jdk8 -->
@@ -533,6 +534,20 @@
             <groupId>net.openhft</groupId>
             <artifactId>affinity</artifactId>
             <version>3.21ea82</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -591,6 +606,10 @@
                     <compilerArgs>
                         <arg>--add-exports</arg>
                         <arg>java.base/jdk.internal.vm.annotation=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.base/jdk.internal.misc=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.base/sun.nio.ch=ALL-UNNAMED</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

@@ -3,6 +3,8 @@ package com.hxy.recipe.performance;
 import com.hxy.recipe.util.BenchmarkUtil;
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.collections.impl.map.mutable.primitive.IntIntHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -25,32 +27,56 @@ public class MapPerformance {
 
         Utils.sleepInSeconds(5L);
 
-        run(true);
+        while (true) {
+            run(true);
+        }
     }
 
     private static void run(boolean flag) {
-        List<String> strList = new ArrayList<>(SIZE);
+        List<Integer> intList = new ArrayList<>(SIZE);
         for (int i = 0; i < SIZE; i++) {
-            strList.add(String.valueOf(i));
+            intList.add(i);
         }
 
-        Map<String, String> hashMap = new HashMap<>(SIZE);
+        IntIntHashMap i2iMap = new IntIntHashMap(SIZE);
+        long i2iMapPutTime = BenchmarkUtil.singleRun(() -> {
+            intList.forEach(i -> i2iMap.put(i, i));
+        });
+        Assert.isTrue(i2iMap.size() == SIZE, "eq");
+
+        long i2iMapGetTime = BenchmarkUtil.singleRun(() -> intList.forEach(i2iMap::get));
+
+        IntObjectHashMap<Integer> i2IMap = new IntObjectHashMap<>(SIZE);
+        long i2IMapPutTime = BenchmarkUtil.singleRun(() -> {
+            intList.forEach(i -> i2IMap.put(i, i));
+        });
+        Assert.isTrue(i2IMap.size() == SIZE, "eq");
+
+        long i2IMapGetTime = BenchmarkUtil.singleRun(() -> intList.forEach(i2IMap::get));
+
+        Map<Integer, Integer> hashMap = new HashMap<>(SIZE);
         long hashMapPutTime = BenchmarkUtil.singleRun(() -> {
-            strList.forEach(str -> hashMap.put(str, str));
+            intList.forEach(i -> hashMap.put(i, i));
         });
         Assert.isTrue(hashMap.size() == SIZE, "eq");
 
-        long hashMapGetTime = BenchmarkUtil.singleRun(() -> strList.forEach(hashMap::get));
+        long hashMapGetTime = BenchmarkUtil.singleRun(() -> intList.forEach(hashMap::get));
 
-        Map<String, String> linkedHashMap = new LinkedHashMap<>(SIZE);
-        long linkedHashMapPutTime = BenchmarkUtil.singleRun(() -> strList.forEach(str ->
-                linkedHashMap.put(str, str))
+        Map<Integer, Integer> linkedHashMap = new LinkedHashMap<>(SIZE);
+        long linkedHashMapPutTime = BenchmarkUtil.singleRun(() -> intList.forEach(i ->
+                linkedHashMap.put(i, i))
         );
         Assert.isTrue(linkedHashMap.size() == SIZE, "eq");
 
-        long linkedHashMapGetTime = BenchmarkUtil.singleRun(() -> strList.forEach(linkedHashMap::get));
+        long linkedHashMapGetTime = BenchmarkUtil.singleRun(() -> intList.forEach(linkedHashMap::get));
 
         if (flag) {
+            log.info("i2iMapPutTime {}", i2iMapPutTime);
+            log.info("i2iMapPutTime {}", i2iMapGetTime);
+
+            log.info("i2IMapPutTime {}", i2IMapPutTime);
+            log.info("i2IMapGetTime {}", i2IMapGetTime);
+
             log.info("hashMapPutTime {}", hashMapPutTime);
             log.info("hashMapGetTime {}", hashMapGetTime);
 
