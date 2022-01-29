@@ -3,6 +3,8 @@ package com.hxy.recipe.performance;
 import com.hxy.recipe.util.BenchmarkUtil;
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class ConcurrentMapPerformance {
         System.gc();
         Utils.sleepInSeconds(1L);
 
-        org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<Integer, Integer> eUnsafeConcurrentHashMap = new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(SIZE);
+        ConcurrentHashMapUnsafe<Integer, Integer> eUnsafeConcurrentHashMap = new ConcurrentHashMapUnsafe<>(SIZE);
         long eUnsafeConcurrentHashMapPutTime = BenchmarkUtil.multiRun(() -> {
             numList.forEach(num -> eUnsafeConcurrentHashMap.put(num, num));
         }, PARALLEL);
@@ -56,7 +58,7 @@ public class ConcurrentMapPerformance {
         System.gc();
         Utils.sleepInSeconds(1L);
 
-        org.eclipse.collections.impl.map.mutable.ConcurrentHashMap<Integer, Integer> eConcurrentHashMap = new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap<>(SIZE);
+        ConcurrentHashMap<Integer, Integer> eConcurrentHashMap = new ConcurrentHashMap<>(SIZE);
         long eConcurrentHashMapPutTime = BenchmarkUtil.multiRun(() -> {
             numList.forEach(num -> eConcurrentHashMap.put(num, num));
         }, PARALLEL);
