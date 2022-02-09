@@ -1,5 +1,9 @@
 package com.hxy.recipe.lambda;
 
+/**
+ * VM options add:
+ * -Djdk.internal.lambda.dumpProxyClasses=/Users/tmp
+ */
 public class LambdaStart {
 
     public static void main(String[] args) {
