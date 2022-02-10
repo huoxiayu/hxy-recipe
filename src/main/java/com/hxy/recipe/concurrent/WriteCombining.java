@@ -16,7 +16,7 @@ public class WriteCombining {
     private static final byte[] arrayF = new byte[ITEMS];
 
     public static void main(final String[] args) {
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 30; i++) {
             System.out.println(i + " SingleLoop duration (ms) = " + TimeUtil.nano2Millis(runCaseOne()));
             System.out.println(i + " SplitLoop duration (ms) = " + TimeUtil.nano2Millis(runCaseTwo()));
         }
