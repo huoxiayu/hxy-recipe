@@ -14,6 +14,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @see com.codahale.metrics.EWMA
+ * @see Reservoir
+ * 蓄水池算法，以极低的开销统计无限数据流的数据分布情况
+ * 如均值、中位数、p75、p95分布的数值等
+ * reference:
+ *
+ *
+ * @see <a href="https://www.helpsystems.com/resources/guides/unix-load-average-part-1-how-it-works">part1</a>
+ * @see <a href="https://www.helpsystems.com/resources/guides/unix-load-average-part-2-not-your-average-average">part2</a>
+ */
 @Slf4j
 public class ReservoirStart {
 
