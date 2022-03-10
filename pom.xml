@@ -582,6 +582,13 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.scala-lang.modules/scala-async -->
+        <dependency>
+            <groupId>org.scala-lang.modules</groupId>
+            <artifactId>scala-async_2.12</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -653,14 +660,15 @@
             </plugin>
 
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
-                        <id>scala-compile</id>
+                        <id>scala-compile-first</id>
                         <phase>process-resources</phase>
                         <goals>
+                            <goal>add-source</goal>
                             <goal>compile</goal>
                         </goals>
                     </execution>
@@ -672,7 +680,35 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <args>
+                        <arg>-Xasync</arg>
+                    </args>
+                    <addScalacArgs>-Xasync</addScalacArgs>
+                </configuration>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.scala-tools</groupId>-->
+<!--                <artifactId>maven-scala-plugin</artifactId>-->
+<!--                <version>2.15.2</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>scala-compile</id>-->
+<!--                        <phase>process-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>compile</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>scala-test-compile</id>-->
+<!--                        <phase>process-test-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>testCompile</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
