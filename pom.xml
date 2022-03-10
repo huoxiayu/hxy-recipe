@@ -18,6 +18,7 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.5.32</kotlin.version>
+        <kotlin.coroutine.version>1.5.2</kotlin.coroutine.version>
         <scala.version>2.12.14</scala.version>
         <spark.version>3.1.0</spark.version>
         <akka.version>2.5.18</akka.version>
@@ -555,6 +556,12 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-html-jvm</artifactId>
             <version>0.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>${kotlin.coroutine.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.apurebase/ExcelDSL -->

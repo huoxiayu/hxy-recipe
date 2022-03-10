@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 public class FastCollectionStart {
 
     private static final int WARM_UP_TIMES = 10;
-    private static final int TIMES = 100_0000;
+    private static final int TIMES = 1000_0000;
 
     public static void main(String[] args) {
         for (int i = 0; i < WARM_UP_TIMES; i++) {
@@ -28,7 +28,7 @@ public class FastCollectionStart {
     }
 
     private static void eclipse() {
-        org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap eclipseMap = new org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap();
+        org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap eclipseMap = new org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap(TIMES);
         BenchmarkUtil.singleRun(() -> {
             for (int i = 0; i < TIMES; i++) {
                 eclipseMap.put(i, i);
@@ -43,7 +43,7 @@ public class FastCollectionStart {
     }
 
     private static void fastUtil() {
-        Int2LongMap fastUtilMap = new Int2LongOpenHashMap();
+        Int2LongMap fastUtilMap = new Int2LongOpenHashMap(TIMES);
         BenchmarkUtil.singleRun(() -> {
             for (int i = 0; i < TIMES; i++) {
                 fastUtilMap.put(i, i);
@@ -58,7 +58,7 @@ public class FastCollectionStart {
     }
 
     private static void koloboke() {
-        HashIntIntMap kolobokeMap = HashIntIntMaps.newMutableMap();
+        HashIntIntMap kolobokeMap = HashIntIntMaps.newMutableMap(TIMES);
         BenchmarkUtil.singleRun(() -> {
             for (int i = 0; i < TIMES; i++) {
                 kolobokeMap.put(i, i);
