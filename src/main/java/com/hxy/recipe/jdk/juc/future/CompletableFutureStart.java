@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -17,28 +19,12 @@ import java.util.function.Supplier;
 public class CompletableFutureStart {
 
     public static void main(String[] args) {
-        // example();
-
-        long start = System.currentTimeMillis();
-        List.of(
-                List.of(1001, 1002, 1003, 1004),
-                List.of(2001, 2002, 2003, 2004)
-        ).parallelStream()
-                .forEach(list -> {
-                    log.info("list {} begin", list);
-                    list.parallelStream().forEach(item -> {
-                        log.info("item {} begin", item);
-                        Utils.sleepInMillis(item);
-                        log.info("item {} end", item);
-                    });
-                    log.info("list {} end", list);
-                });
-
-        long cost = System.currentTimeMillis() - start;
-        log.info("process cost {} millis", cost);
+        // example1();
+        // example2();
+        example3();
     }
 
-    private static void example() {
+    private static void example1() {
         Supplier<String> slowCall = () -> {
             Utils.sleepInSeconds(10L);
             return UUID.randomUUID().toString();
@@ -74,6 +60,46 @@ public class CompletableFutureStart {
         } catch (Exception e) {
             log.error("error: ", e);
         }
+    }
+
+    private static void example2() {
+        long start = System.currentTimeMillis();
+        List.of(
+                List.of(1001, 1002, 1003, 1004),
+                List.of(2001, 2002, 2003, 2004)
+        ).parallelStream()
+                .forEach(list -> {
+                    log.info("list {} begin", list);
+                    list.parallelStream().forEach(item -> {
+                        log.info("item {} begin", item);
+                        Utils.sleepInMillis(item);
+                        log.info("item {} end", item);
+                    });
+                    log.info("list {} end", list);
+                });
+
+        long cost = System.currentTimeMillis() - start;
+        log.info("process cost {} millis", cost);
+    }
+
+    private static void example3() {
+        FutureTask<Integer> futureInt = new FutureTask<>(() -> {
+            Utils.sleepInSeconds(5L);
+            log.info("future done");
+            return 666;
+        });
+
+        Utils.newExecutors("future-runner").execute(futureInt);
+
+        List.of(1, 2, 3, 4)
+                .parallelStream()
+                .forEach(i -> {
+                    try {
+                        log.info("num {} -> get {}", i, futureInt.get());
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
 }
