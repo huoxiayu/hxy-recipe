@@ -19,6 +19,20 @@ import java.util.function.Supplier;
 public class CompletableFutureStart {
 
     public static void main(String[] args) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            Utils.sleepInSeconds(5L);
+            log.info("first");
+        });
+
+        // with this line, second and third will be printed in main thread
+        // comment this line, in fjp thread
+        // Utils.sleepInSeconds(10L);
+
+        future.thenRun(() -> log.info("second"))
+                .whenComplete((ret, e) -> log.info("third"));
+
+        Utils.sleepInSeconds(10L);
+
         // example1();
         // example2();
         example3();
