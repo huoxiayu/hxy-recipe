@@ -1,4 +1,4 @@
-package com.hxy.recipe.jdk.juc;
+package com.hxy.recipe.jdk.juc.exchanger;
 
 import com.hxy.recipe.util.Utils;
 import lombok.extern.slf4j.Slf4j;
