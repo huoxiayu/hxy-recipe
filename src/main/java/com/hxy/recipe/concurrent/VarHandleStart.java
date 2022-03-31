@@ -16,6 +16,17 @@ public class VarHandleStart {
     private static final Object[] ARRAY = new Object[1 << 24];
 
     public static void main(String[] args) {
+        /**
+         * @see VarHandle.AccessType
+         * @see VarHandle.AccessMode
+         */
+        VarHandle.loadLoadFence();
+        VarHandle.storeStoreFence();
+
+        VarHandle.acquireFence();
+        VarHandle.releaseFence();
+        VarHandle.fullFence();
+
         int times = 100;
         int length = ARRAY.length;
         for (int i = 0; i < times; i++) {
