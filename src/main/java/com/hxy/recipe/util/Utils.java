@@ -40,7 +40,13 @@ public final class Utils {
     }
 
     public static ExecutorService newExecutors(String prefix, int coolPoolSize) {
-        return nameExecutorServiceMap.computeIfAbsent(prefix, k -> Executors.newFixedThreadPool(coolPoolSize, newThreadFactory(prefix)));
+        return nameExecutorServiceMap.computeIfAbsent(prefix, k -> {
+            ExecutorService e = Executors.newFixedThreadPool(coolPoolSize, newThreadFactory(prefix));
+            for (int i = 0; i < coolPoolSize; i++) {
+                e.execute(() -> {});
+            }
+            return e;
+        });
     }
 
     public static ThreadFactory newThreadFactory(String prefix) {
