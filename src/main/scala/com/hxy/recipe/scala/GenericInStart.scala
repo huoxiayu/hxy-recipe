@@ -28,12 +28,12 @@ class Compare1[T <: Comparable[T]]
 
 class Compare2[_ <: Comparable[_]]
 
-class Compare3[T >: Comparable[T]]
+//class Compare3[T >: Comparable[T]]
 
 class Compare4[_ >: Comparable[_]]
 
 class Compare5[T <% Comparable[T]]
 
-class Compare6[T : Comparable[T]]
+//class Compare6[T : Comparable[T]]
 
 class Compare7[T : Comparable]
