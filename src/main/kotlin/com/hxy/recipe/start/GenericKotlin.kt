@@ -5,7 +5,14 @@ import java.util.*
 /**
  * @see com.hxy.recipe.generic.GenericEraseJava
  */
+inline fun <reified T> getT(clazz: Class<T>): T {
+    return clazz.newInstance()
+}
+
 fun main() {
+    getT(Int::class.java);
+
+
     repeat(10) {
         val listOf: List<Number> = list()
         listOf.forEach { println(check(it)) }
