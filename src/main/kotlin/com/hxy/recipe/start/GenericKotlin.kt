@@ -12,7 +12,6 @@ inline fun <reified T> getT(clazz: Class<T>): T {
 fun main() {
     getT(Int::class.java);
 
-
     repeat(10) {
         val listOf: List<Number> = list()
         listOf.forEach { println(check(it)) }
