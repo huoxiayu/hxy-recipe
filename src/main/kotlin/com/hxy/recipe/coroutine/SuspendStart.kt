@@ -9,10 +9,10 @@ suspend fun foo(): String {
     return "foo-result"
 }
 
-suspend fun bar(): String {
+suspend fun bar(str: String): String {
     delay(10)
-    println("bar")
-    return "bar-result"
+    println(str)
+    return "$str-result"
 }
 
 fun main() {
@@ -20,7 +20,7 @@ fun main() {
         val f = foo()
         println(f)
 
-        val b = bar()
+        val b = bar("bar")
         println(b)
     }
 }
