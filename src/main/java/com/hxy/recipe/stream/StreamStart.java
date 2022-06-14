@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.UUID;
@@ -39,9 +40,38 @@ public class StreamStart {
             this.p5 = rand.nextDouble();
             this.v = rand.nextInt();
         }
+
+        private long sum() {
+            return p1.hashCode() + p2 + p3 + (p4 ? 1 : 0) + Math.round(p5) + v;
+        }
     }
 
     public static void main(String[] args) {
+        int size = 1 << 25;
+        Bean[] array = new Bean[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = new Bean();
+        }
+
+        RunnableUtil.loopRunnable(() -> {
+            BenchmarkUtil.singleRun(
+                    () -> {
+                        long sum = Arrays.stream(array).mapToLong(Bean::sum).sum();
+                        log.info("sum -> {}", sum);
+                    },
+                    "serial-cost"
+            );
+
+            BenchmarkUtil.singleRun(
+                    () -> {
+                        long sum = Arrays.stream(array).parallel().mapToLong(Bean::sum).sum();
+                        log.info("sum -> {}", sum);
+                    },
+                    "parallel-cost"
+            );
+
+        }, 100).run();
+
         System.out.println(Spliterator.DISTINCT);
         System.out.println(Spliterator.SORTED);
         System.out.println(Spliterator.ORDERED);
