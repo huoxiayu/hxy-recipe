@@ -2,6 +2,7 @@ package com.hxy.recipe.concurrent;
 
 import com.hxy.recipe.util.BenchmarkUtil;
 import com.hxy.recipe.util.Utils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.invoke.MethodHandles;
@@ -99,6 +100,38 @@ public class VarHandleStart {
         if (!b) {
             throw new RuntimeException("check fail");
         }
+    }
+
+    @Data
+    private static class Bean {
+        private int id;
+    }
+
+    private static final VarHandle AA;
+
+    static {
+        try {
+            AA = MethodHandles.lookup().findVarHandle(
+                    Bean.class, "id", int.class
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Bean bean = new Bean();
+        bean.setId(0);
+        log.info("bean -> {}", bean);
+
+        AA.set(bean, 1);
+        log.info("bean -> {}", bean);
+
+        boolean cas = AA.compareAndSet(bean, 1, 2);
+        log.info("cas -> {}, bean -> {}", cas, bean);
+
+        cas = AA.compareAndSet(bean, 1, 2);
+        log.info("cas -> {}, bean -> {}", cas, bean);
+
+        log.info("end");
     }
 
 }
