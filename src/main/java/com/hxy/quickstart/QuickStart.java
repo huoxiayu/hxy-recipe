@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class QuickStart {
 
     public static void main(String[] args) throws Exception {
+        log.info("\\033[32mhelloxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\033[0;39m");
+
         ConcurrentHashMap<String, String> s2s = new ConcurrentHashMap<>(10_000);
 
         s2s.put("", "");
