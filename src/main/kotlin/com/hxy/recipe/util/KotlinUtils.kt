@@ -7,3 +7,13 @@ object KotlinUtils {
     }
 
 }
+
+fun main() {
+    val list = listOf(1, 2, 3)
+    println(list)
+
+    val mapList = list.map { it + 1 }
+    println(mapList)
+
+    mapList.forEach { println("ele -> $it") }
+}
