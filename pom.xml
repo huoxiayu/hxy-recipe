@@ -629,6 +629,42 @@
             <artifactId>ST4</artifactId>
             <version>4.3.3</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/ai.djl/api -->
+        <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>api</artifactId>
+            <version>0.19.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/ai.djl.tensorrt/tensorrt -->
+        <dependency>
+            <groupId>ai.djl.tensorrt</groupId>
+            <artifactId>tensorrt</artifactId>
+            <version>0.19.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.tensorflow/tensorflow -->
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>tensorflow</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.tensorflow/proto -->
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>proto</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
+        <!-- gpu support -->
+        <!-- https://mvnrepository.com/artifact/org.tensorflow/libtensorflow_jni_gpu -->
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>libtensorflow_jni_gpu</artifactId>
+            <version>1.15.0</version>
+        </dependency>
     </dependencies>
 
     <build>
