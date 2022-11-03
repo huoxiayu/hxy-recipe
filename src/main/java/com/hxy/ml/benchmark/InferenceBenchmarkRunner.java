@@ -14,8 +14,9 @@ import org.tensorflow.framework.GPUOptions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.LongAdder;
 
 public class InferenceBenchmarkRunner {
 
@@ -37,32 +38,36 @@ public class InferenceBenchmarkRunner {
 
     public static class RunConfig {
         public String localModelPath;
+        public String inputPath;
         public Device device;
+        public int deviceId;
         public int parallel;
-        public int batchSize;
-        public int epoch;
+        public int timeInSeconds;
 
         public RunConfig(String localModelPath,
+                         String inputPath,
                          Device device,
+                         int deviceId,
                          int parallel,
-                         int batchSize,
-                         int epoch
+                         int timeInSeconds
         ) {
             this.localModelPath = localModelPath;
+            this.inputPath = inputPath;
             this.device = device;
+            this.deviceId = deviceId;
             this.parallel = parallel;
-            this.batchSize = batchSize;
-            this.epoch = epoch;
+            this.timeInSeconds = timeInSeconds;
         }
 
         @Override
         public String toString() {
             return "RunConfig{" +
                     "localModelPath='" + localModelPath + '\'' +
+                    ", inputPath=" + inputPath +
                     ", device=" + device +
+                    ", deviceId=" + deviceId +
                     ", parallel=" + parallel +
-                    ", batchSize=" + batchSize +
-                    ", epoch=" + epoch +
+                    ", v=" + timeInSeconds +
                     '}';
         }
 
@@ -73,11 +78,15 @@ public class InferenceBenchmarkRunner {
         if (localModelPath == null || localModelPath.length() <= 0) {
             throw new NullPointerException();
         }
+        String inputPath = System.getProperty("input.path");
+        if (inputPath == null || inputPath.length() <= 0) {
+            throw new NullPointerException();
+        }
         Device device = Device.fromDevice(System.getProperty("device"));
+        int deviceId = Device.CPU == device ? 0 : Integer.parseInt("device.id");
         int parallel = Integer.parseInt(System.getProperty("parallel"));
-        int batchSize = Integer.parseInt(System.getProperty("batch.size"));
-        int epoch = Integer.parseInt(System.getProperty("epoch"));
-        return new RunConfig(localModelPath, device, parallel, batchSize, epoch);
+        int timeInSeconds = Integer.parseInt(System.getProperty("time.in.seconds"));
+        return new RunConfig(localModelPath, inputPath, device, deviceId, parallel, timeInSeconds);
     }
 
     public static SavedModelBundle loadModelByConfig(RunConfig runConfig) {
@@ -85,9 +94,8 @@ public class InferenceBenchmarkRunner {
                 .setAllowSoftPlacement(true)
                 .setLogDevicePlacement(true);
         if (Device.GPU == runConfig.device) {
-            String gpuIds = "0,1,2,3";
             GPUOptions gpuOptions = GPUOptions.newBuilder()
-                    .setVisibleDeviceList(gpuIds)
+                    .setVisibleDeviceList(String.valueOf(runConfig.deviceId))
                     .setPerProcessGpuMemoryFraction(0.85f)
                     .setAllowGrowth(true)
                     .build();
@@ -139,13 +147,8 @@ public class InferenceBenchmarkRunner {
                 .toByteArray();
     }
 
-    public static byte[][] buildExamples(RunConfig runConfig) {
-        int batchSize = runConfig.batchSize;
-        byte[][] examples = new byte[batchSize][];
-        for (int i = 0; i < batchSize; i++) {
-            examples[i] = buildExample();
-        }
-        return examples;
+    public static List<byte[][]> buildExamples(RunConfig runConfig) {
+        return null;
     }
 
     public static void main(String[] args) throws Exception {
@@ -158,8 +161,12 @@ public class InferenceBenchmarkRunner {
         Session session = model.session();
         System.out.println("new session");
 
-        byte[][] inputBytes = buildExamples(runConfig);
+        List<byte[][]> examples = buildExamples(runConfig);
+        int size = examples.size();
+        int max = 10000;
         Runnable inference = () -> {
+            int rand = ThreadLocalRandom.current().nextInt(max);
+            byte[][] inputBytes = examples.get(rand % size);
             Tensor<String> inputBatch = Tensors.create(inputBytes);
             String inputOperation = "input_example_tensor:0";
             String outputOperation = "Sigmoid:0";
@@ -168,7 +175,7 @@ public class InferenceBenchmarkRunner {
             List<Tensor<?>> result = runner.run();
             for (Tensor<?> tensor : result) {
                 float[][] scores = tensor.copyTo(new float[inputBytes.length][1]);
-                if (ThreadLocalRandom.current().nextInt(10000) < 1) {
+                if (rand < 1) {
                     for (float[] score : scores) {
                         System.out.println("score: " + Arrays.toString(score));
                     }
@@ -176,39 +183,28 @@ public class InferenceBenchmarkRunner {
             }
         };
 
-        int warmUpTimes = 100;
-        System.out.println("warm-up begin");
-        action(inference, warmUpTimes);
-        System.out.println("warm-up end");
-
-        LongAdder sumCost = new LongAdder();
-        LongAdder inferenceCnt = new LongAdder();
         int parallel = runConfig.parallel;
-        for (int e = 0; e < runConfig.epoch; e++) {
-            CountDownLatch cdl = new CountDownLatch(parallel);
-            for (int i = 0; i < parallel; i++) {
-                final int fi = i;
+        ExecutorService executors = Executors.newFixedThreadPool(parallel);
 
-                Thread thread_i = new Thread(() -> {
-                    int benchmarkTimes = 100;
+        CountDownLatch cdl = new CountDownLatch(parallel);
+        for (int i = 0; i < parallel; i++) {
+            executors.execute(() -> {
 
-                    long[] costs = action(inference, benchmarkTimes);
-                    inferenceCnt.add((long) benchmarkTimes * runConfig.batchSize);
-                    for (long cost : costs) {
-                        sumCost.add(cost);
+                while (true) {
+                    inference.run();
+
+                    if (true) {
+                        break;
                     }
+                }
 
-                    printP99Cost(costs);
-                    cdl.countDown();
-                }, "inference-thread-" + i);
-                thread_i.start();
-            }
-            cdl.await();
+                cdl.countDown();
+
+            });
         }
 
-        System.out.printf("inference-request -> %s%n", inferenceCnt);
-        System.out.printf("total cost -> %s millis%n", sumCost);
-        System.out.printf("avg cost %s millis%n", sumCost.doubleValue() / inferenceCnt.doubleValue());
+        cdl.await();
+
     }
 
 }
