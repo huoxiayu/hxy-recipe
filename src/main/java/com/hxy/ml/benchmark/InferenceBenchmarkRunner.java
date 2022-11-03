@@ -4,13 +4,11 @@ import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
-import org.tensorflow.example.Example;
-import org.tensorflow.example.Feature;
-import org.tensorflow.example.Features;
-import org.tensorflow.example.Int64List;
 import org.tensorflow.framework.ConfigProto;
 import org.tensorflow.framework.GPUOptions;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -41,14 +39,14 @@ public class InferenceBenchmarkRunner {
         public String inputPath;
         public Device device;
         public int deviceId;
-        public int parallel;
+        public String parallel;
         public int timeInSeconds;
 
         public RunConfig(String localModelPath,
                          String inputPath,
                          Device device,
                          int deviceId,
-                         int parallel,
+                         String parallel,
                          int timeInSeconds
         ) {
             this.localModelPath = localModelPath;
@@ -70,7 +68,6 @@ public class InferenceBenchmarkRunner {
                     ", v=" + timeInSeconds +
                     '}';
         }
-
     }
 
     public static RunConfig parseRunConfig() {
@@ -84,7 +81,7 @@ public class InferenceBenchmarkRunner {
         }
         Device device = Device.fromDevice(System.getProperty("device"));
         int deviceId = Device.CPU == device ? 0 : Integer.parseInt("device.id");
-        int parallel = Integer.parseInt(System.getProperty("parallel"));
+        String parallel = System.getProperty("parallel");
         int timeInSeconds = Integer.parseInt(System.getProperty("time.in.seconds"));
         return new RunConfig(localModelPath, inputPath, device, deviceId, parallel, timeInSeconds);
     }
@@ -112,43 +109,15 @@ public class InferenceBenchmarkRunner {
                 .load();
     }
 
-    public static long action(Runnable runnable) {
-        long start = System.currentTimeMillis();
-        runnable.run();
-        return System.currentTimeMillis() - start;
-    }
-
-    public static long[] action(Runnable runnable, int times) {
-        long[] cost = new long[times];
-        for (int i = 0; i < times; i++) {
-            cost[i] = action(runnable);
+    private static List<byte[][]> readExamples(RunConfig runConfig) {
+        String inputPath = runConfig.inputPath;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(inputPath))) {
+            List<byte[][]> read = (List<byte[][]>) ois.readObject();
+            System.out.println("read.size -> " + read.size());
+            return read;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return cost;
-    }
-
-    public static void printP99Cost(long[] costs) {
-        Arrays.sort(costs);
-        int len = costs.length;
-        int idx = (int) Math.floor(len * 0.99D);
-        System.out.printf("p99 cost %s millis%n", costs[idx]);
-    }
-
-    public static byte[] buildExample() {
-        Features.Builder featuresBuilder = Features.newBuilder();
-        Int64List.Builder int64ListBuilder = Feature.newBuilder().getInt64ListBuilder();
-        int64ListBuilder.addValue(ThreadLocalRandom.current().nextInt(100));
-        Feature feature = Feature.newBuilder()
-                .setInt64List(int64ListBuilder)
-                .build();
-        featuresBuilder.putFeature("ipcity", feature);
-        return Example.newBuilder()
-                .setFeatures(featuresBuilder.build())
-                .build()
-                .toByteArray();
-    }
-
-    public static List<byte[][]> buildExamples(RunConfig runConfig) {
-        return null;
     }
 
     public static void main(String[] args) throws Exception {
@@ -161,7 +130,7 @@ public class InferenceBenchmarkRunner {
         Session session = model.session();
         System.out.println("new session");
 
-        List<byte[][]> examples = buildExamples(runConfig);
+        List<byte[][]> examples = readExamples(runConfig);
         int size = examples.size();
         int max = 10000;
         Runnable inference = () -> {
@@ -183,27 +152,37 @@ public class InferenceBenchmarkRunner {
             }
         };
 
-        int parallel = runConfig.parallel;
-        ExecutorService executors = Executors.newFixedThreadPool(parallel);
-
-        CountDownLatch cdl = new CountDownLatch(parallel);
-        for (int i = 0; i < parallel; i++) {
-            executors.execute(() -> {
-
-                while (true) {
-                    inference.run();
-
-                    if (true) {
-                        break;
+        String parallelString = runConfig.parallel;
+        for (String parallelStr : parallelString.split(",")) {
+            int parallel = Integer.parseInt(parallelStr);
+            System.out.println("parallel " + parallel + " start");
+            ExecutorService executors = Executors.newFixedThreadPool(parallel);
+            CountDownLatch cdl = new CountDownLatch(parallel);
+            for (int i = 0; i < parallel; i++) {
+                executors.execute(() -> {
+                    long endTime = System.currentTimeMillis() + runConfig.timeInSeconds * 1000L;
+                    while (true) {
+                        long start = System.currentTimeMillis();
+                        inference.run();
+                        long end = System.currentTimeMillis();
+                        long cost = end - start;
+                        statistic(cost);
+                        if (end > endTime) {
+                            break;
+                        }
                     }
-                }
 
-                cdl.countDown();
+                    cdl.countDown();
+                });
+            }
+            cdl.await();
+            executors.shutdown();
 
-            });
+            System.out.println("parallel " + parallel + " end");
         }
+    }
 
-        cdl.await();
+    public static void statistic(long cost) {
 
     }
 
