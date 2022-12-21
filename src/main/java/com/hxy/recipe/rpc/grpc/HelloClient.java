@@ -18,8 +18,8 @@ public class HelloClient {
 
     public HelloClient(String host, int port) {
         this(ManagedChannelBuilder.forAddress(host, port)
-            .usePlaintext(true)
-            .build());
+                .usePlaintext(true)
+                .build());
     }
 
     private HelloClient(ManagedChannel channel) {
@@ -43,8 +43,24 @@ public class HelloClient {
 
     public static void main(String[] args) throws Exception {
         HelloClient client = new HelloClient("127.0.0.1", 50051);
+
         try {
-            client.sendMsg("hi I am client");
+            int times = 1000;
+            for (int i = 0; i < times; i++) {
+                long start = System.currentTimeMillis();
+
+                StringBuilder sb = new StringBuilder();
+                int len = 1_0000;
+                for (int x = 0; x < len; x++) {
+                    sb.append(x);
+                }
+
+                String input = sb.toString();
+                log.info("copy cost {} millis", System.currentTimeMillis() - start);
+
+                client.sendMsg(input);
+                log.info("rpc cost {} millis", System.currentTimeMillis() - start);
+            }
         } finally {
             client.shutdown();
         }
