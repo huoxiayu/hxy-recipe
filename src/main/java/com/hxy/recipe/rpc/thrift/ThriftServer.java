@@ -26,9 +26,11 @@ public class ThriftServer implements ThriftService.Iface {
         byteBuddy();
 
         ThriftService.Iface iFace = new ThriftServer();
-        TProcessor processor = new ThriftService.Processor(iFace);
+        TProcessor processor = new ThriftService.Processor<>(iFace);
         TNonblockingServerSocket socket = new TNonblockingServerSocket(Utils.PORT);
-        TNonblockingServer server = new TNonblockingServer(processor, socket, new TFramedTransport.Factory(), new TBinaryProtocol.Factory());
+        TNonblockingServer.Args arg = new TNonblockingServer.Args(socket);
+        arg.processor(processor);
+        TNonblockingServer server = new TNonblockingServer(arg);
 
         server.serve();
 
@@ -48,7 +50,7 @@ public class ThriftServer implements ThriftService.Iface {
     private static void byteBuddy() throws ClassNotFoundException {
         ByteBuddyAgent.install();
 
-        String clazz = "com.hxy.recipe.rpc.thrift.ThriftService$Processor$send";
+        String clazz = "com.hxy.recipe.thrift.ThriftService$Processor$send";
         Class<?> aClass = Class.forName(clazz);
         log.info("{}", aClass.getName());
 
