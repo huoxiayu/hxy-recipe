@@ -17,10 +17,10 @@ binary_list
 .vscode/
 CMakeCache.txt
 CMakeFiles/
-Makefile
 cmake_install.cmake
 *.out
 *.a
 *.o
+*.so
 build/
 
