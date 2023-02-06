@@ -1,0 +1,35 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            // 标签的名字
+            "label": "build",
+            // 编译命令
+            "command": "g++",
+            //编译命令需要的参数
+            "args": [
+                "-g",
+                "-Wall",
+                "-std=c++17",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            // 控制终端显示
+            "presentation": {
+                // 执行命令是否输出到终端
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                // 执行任务前是否清除终端
+                "clear": false
+            },
+        }
+    ]
+}

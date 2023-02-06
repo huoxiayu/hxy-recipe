@@ -1,0 +1,38 @@
+{
+    // "java.jdt.ls.java.home": "/Users/hxy/software/jdk11/Contents/Home",
+    "tabnine.experimentalAutoImports": true,
+    "editor.fontSize": 22,
+    "terminal.integrated.fontSize": 16,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -javaagent:\"/Users/hxy/.vscode/extensions/gabrielbb.vscode-lombok-1.0.1/server/lombok.jar\"",
+    "cmake.configureOnOpen": true,
+    "redhat.telemetry.enabled": true,
+    "workbench.colorTheme": "One Monokai",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "sonarlint.ls.javaHome": "/Users/hxy/software/jdk11/Contents/Home",
+    "remote.SSH.showLoginTerminal": true,
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "C_Cpp.default.customConfigurationVariables": {},
+    "C_Cpp.default.compilerArgs": [
+        "-g",
+        "${file}",
+        "-std=c++17",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}"
+    ],
+    "git.openRepositoryInParentFolders": "never",
+    "code-runner.executorMap": {
+        "cpp": "cd $dir && g++ -std=c++17 -g $fileName -o a.out && ./a.out"
+    }
+}

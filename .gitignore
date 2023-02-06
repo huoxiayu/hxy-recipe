@@ -14,11 +14,11 @@ tmp_sequence/
 tmp_json/
 binary_list
 
-.vscode/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 *.out
+a.out*
 *.a
 *.o
 *.so
