@@ -23,4 +23,4 @@ a.out*
 *.o
 *.so
 build/
-
+**/bin/**
