@@ -1,2 +1,8 @@
-main:
-	gcc main.c -o a.out
+main: main.c
+	gcc main.c -o main
+
+.PHONY: clean
+
+clean:
+	- rm main
+	- echo "clean finished"

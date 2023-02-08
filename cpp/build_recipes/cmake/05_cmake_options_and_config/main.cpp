@@ -1,5 +1,10 @@
 #include <iostream>
+#ifdef ANOTHER_CONFIG_H
+#include "another.config.h"
+#else 
 #include "config.h"
+#endif
+
 using namespace std;
 
 int slow_compute() {
