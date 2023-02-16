@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
@@ -32,9 +33,12 @@ public class ObjectLayout {
     private static final int OBJ_SIZE = 33;
     private static final boolean GET_STRING = false;
     private static final int LOOP_TIMES = 100;
+    private static final boolean bigEndian = true;
 
     @SneakyThrows
     public static void main(String[] args) {
+        log.info("native byte order is -> {}", ByteOrder.nativeOrder());
+
         Bean bean = new Bean();
         int outerInt = 100;
         bean.setOuterInt(outerInt);
@@ -178,6 +182,8 @@ public class ObjectLayout {
                 Assert.isTrue(outerBool == outerBool_, "eq");
 
                 double outerDouble_ = getOuterDouble(unsafe, address, i);
+                //System.out.println(Long.toBinaryString(Double.doubleToRawLongBits(outerDouble)));
+                //System.out.println(Long.toBinaryString(Double.doubleToRawLongBits(outerDouble_)));
                 Assert.isTrue(outerDouble == outerDouble_, "eq");
 
                 int innerInt_ = getInnerInt(unsafe, address, i);
@@ -239,11 +245,11 @@ public class ObjectLayout {
     }
 
     private static int getOuterInt(Unsafe unsafe, long address, int index) {
-        return unsafe.getInt(address + (long) index * OBJ_SIZE);
+        return unsafe.getIntUnaligned(null, address + (long) index * OBJ_SIZE, bigEndian);
     }
 
     private static long getOuterLong(Unsafe unsafe, long address, int index) {
-        return unsafe.getLong(address + (long) index * OBJ_SIZE + 4);
+        return unsafe.getLongUnaligned(null, address + (long) index * OBJ_SIZE + 4, bigEndian);
     }
 
     private static boolean getOuterBool(Unsafe unsafe, long address, int index) {
@@ -251,11 +257,13 @@ public class ObjectLayout {
     }
 
     private static double getOuterDouble(Unsafe unsafe, long address, int index) {
-        return unsafe.getDouble(address + (long) index * OBJ_SIZE + 13);
+        return Double.longBitsToDouble(
+                unsafe.getLongUnaligned(null, address + (long) index * OBJ_SIZE + 13, bigEndian)
+        );
     }
 
     private static int getInnerInt(Unsafe unsafe, long address, int index) {
-        return unsafe.getInt(address + (long) index * OBJ_SIZE + 21);
+        return unsafe.getIntUnaligned(null, address + (long) index * OBJ_SIZE + 21, bigEndian);
     }
 
     private static String getOuterString(Unsafe unsafe, long address, int index) {
