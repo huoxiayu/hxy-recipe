@@ -4,6 +4,7 @@ import com.hxy.recipe.util.JvmUtil
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.Statistics
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{IntegerType, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
 
@@ -16,6 +17,28 @@ object SparkRunner {
 	def toPair(i: Int): (Int, Int) = (i, i * 2)
 
 	def main(args: Array[String]): Unit = {
+		trySpark()
+		// process()
+	}
+
+	def trySpark(): Unit = {
+		val sparkConf = new SparkConf().setAppName("try-spark").setMaster("local[2]")
+		val spark = SparkSession.builder().config(sparkConf).getOrCreate()
+		val sparkContext = spark.sparkContext
+
+		val parallelizeRdd: RDD[Int] = sparkContext.parallelize(1 to 10, 1)
+		val mapRdd: RDD[Int] = parallelizeRdd.map(it => {
+			println(s"map it -> ${it}")
+			it + 1
+		})
+		val filterRdd = mapRdd.filter(it => {
+			println(s"filter it -> ${it}")
+			it % 2 == 0
+		})
+		filterRdd.foreach(it => println(s"it is -> ${it}"))
+	}
+
+	def process(): Unit = {
 		JvmUtil.monitor(1000L)
 
 		val sparkConf = new SparkConf().setAppName("hxy-spark-app").setMaster("local[2]")
