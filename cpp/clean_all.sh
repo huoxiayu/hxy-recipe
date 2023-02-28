@@ -1,5 +1,7 @@
 #!/bin/bash
 
+find . -perm +111 -type f | grep -v '.sh'  
+
 list="*.out *dSYM"
 
 for item in $list 
