@@ -13,11 +13,12 @@ enum Status : uint64_t {
 int main() {
     cout << "begin" << endl;
 
-    cout << "OK: " << OK << endl;
-    cout << "NOT_OK: " << NOT_OK << endl;
-    cout << "OK_OR_NOT_OK: " << OK_OR_NOT_OK << endl;
-    cout << "OK < 3 ? " << (OK == 1) << endl;
     cout << "typeid(OK).name(): " << typeid(OK).name() << endl;
+
+    cout << "OK: " << Status::OK << endl;
+    cout << "NOT_OK: " << Status::NOT_OK << endl;
+    cout << "OK_OR_NOT_OK: " << Status::OK_OR_NOT_OK << endl;
+    cout << "OK < 3 ? " << (Status::OK == 1) << endl;
 
     cout << "end" << endl;
     return 0;

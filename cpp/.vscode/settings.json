@@ -46,7 +46,7 @@
     ],
     "git.openRepositoryInParentFolders": "never",
     "code-runner.executorMap": {
-        "cpp": "cd $dir && g++ -std=c++17 -g $fileName -o a.out && ./a.out"
+        "cpp": "cd $dir && g++ -Wall -std=c++17 -g $fileName -o a.out && ./a.out"
     },
     "files.associations": {
         "iostream": "cpp",
