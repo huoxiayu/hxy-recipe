@@ -23,6 +23,19 @@
     "[cpp]": {
         "editor.defaultFormatter": "xaver.clang-format"
     },
+    "clang.cxxflags": [
+        "-std=c++17",
+        "-Wall",
+    ],
+    "clang.cflags": [
+        "-std=c11",
+        "Wall"
+    ],
+    "clang.completion.triggerChars": [
+        ".",
+        ":",
+        ">"
+    ],
     "C_Cpp.default.customConfigurationVariables": {},
     "C_Cpp.default.compilerArgs": [
         "-g",
