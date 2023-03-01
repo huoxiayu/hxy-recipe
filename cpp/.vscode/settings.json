@@ -101,6 +101,9 @@
         "functional": "cpp",
         "iterator": "cpp",
         "utility": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "__split_buffer": "cpp",
+        "csignal": "cpp",
+        "vector": "cpp"
     }
 }
