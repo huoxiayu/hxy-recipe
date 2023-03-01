@@ -100,6 +100,7 @@
         "variant": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "thread": "cpp"
     }
 }
