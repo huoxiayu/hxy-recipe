@@ -14,6 +14,8 @@ mutex mu;
 condition_variable condition_var;
 
 void signal_handler(int signum) {
+    mu.lock();
+
     unique_lock<mutex> lock(mu);
     cout << "signal (" << signum << ") received." << endl;
     if (!stop) {
