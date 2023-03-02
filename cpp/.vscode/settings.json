@@ -104,6 +104,8 @@
         "thread": "cpp",
         "__split_buffer": "cpp",
         "csignal": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "random": "cpp",
+        "condition_variable": "cpp"
     }
 }
