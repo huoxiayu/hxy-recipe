@@ -106,6 +106,7 @@
         "csignal": "cpp",
         "vector": "cpp",
         "random": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "algorithm": "cpp"
     }
 }
