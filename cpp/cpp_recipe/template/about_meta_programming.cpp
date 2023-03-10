@@ -107,7 +107,6 @@ template <typename T1, typename T2> struct condition<false, T1, T2> {
 };
 
 void example2() {
-
     typedef condition<true, int, double>::type Type1;
     typedef condition<false, int, double>::type Type2;
     typedef condition<sizeof(int) >= sizeof(double), int, double>::type Type3;
@@ -116,6 +115,16 @@ void example2() {
     std::cout << typeid(Type2).name() << '\n';
     std::cout << typeid(Type3).name() << '\n';
 }
+
+template <bool cond, typename TRUE_TYPE, typename FALSE_TYPE> struct _if {};
+
+template <typename TRUE_TYPE, typename FALSE_TYPE>
+struct _if<true, TRUE_TYPE, FALSE_TYPE> : type_identity<TRUE_TYPE> {};
+
+template <typename TRUE_TYPE, typename FALSE_TYPE>
+struct _if<false, TRUE_TYPE, FALSE_TYPE> : type_identity<FALSE_TYPE> {};
+
+void example3() {}
 
 void example10() {
     using uptr_int = std::unique_ptr<int>;
