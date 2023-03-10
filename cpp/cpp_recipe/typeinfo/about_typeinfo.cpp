@@ -1,7 +1,9 @@
+#include <boost/type_index.hpp>
 #include <cstdlib>
 #include <cxxabi.h>
 #include <iostream>
 #include <typeinfo>
+
 using namespace std;
 
 #define print(X)                                                               \
@@ -40,8 +42,15 @@ template <typename T> string get_type_name() {
     return tname;
 }
 
+template <typename T> string get_pretty_type_name() {
+    return boost::typeindex::type_id<T>().pretty_name();
+}
+
 int main() {
     cout << "begin" << endl;
+
+    cout << "get_pretty_type_name<string>(): " << get_pretty_type_name<string>()
+         << endl;
 
     cout << "get_type_name<int>(): " << get_type_name<int>() << endl;
     cout << "get_type_name<int32_t>(): " << get_type_name<int32_t>() << endl;
