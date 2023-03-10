@@ -116,13 +116,24 @@ void example2() {
     std::cout << typeid(Type3).name() << '\n';
 }
 
-template <bool cond, typename TRUE_TYPE, typename FALSE_TYPE> struct _if {};
+template <bool cond, typename TRUE_TYPE, typename FALSE_TYPE> struct IF {};
 
 template <typename TRUE_TYPE, typename FALSE_TYPE>
-struct _if<true, TRUE_TYPE, FALSE_TYPE> : type_identity<TRUE_TYPE> {};
+struct IF<true, TRUE_TYPE, FALSE_TYPE> : type_identity<TRUE_TYPE> {};
 
 template <typename TRUE_TYPE, typename FALSE_TYPE>
-struct _if<false, TRUE_TYPE, FALSE_TYPE> : type_identity<FALSE_TYPE> {};
+struct IF<false, TRUE_TYPE, FALSE_TYPE> : type_identity<FALSE_TYPE> {};
+
+template <bool cond, typename Body> struct WHILE {};
+
+template <typename Body> struct WHILE<true, Body> {
+    using type =
+        typename WHILE<Body::cond_value, typename Body::next_type>::type;
+};
+
+template <typename Body> struct WHILE<false, Body> {
+    using type = typename Body::res_type;
+};
 
 void example3() {}
 
