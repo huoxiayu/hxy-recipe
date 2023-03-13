@@ -108,6 +108,8 @@
         "random": "cpp",
         "condition_variable": "cpp",
         "algorithm": "cpp",
-        "version": "cpp"
+        "version": "cpp",
+        "optional": "cpp",
+        "array": "cpp"
     }
 }
