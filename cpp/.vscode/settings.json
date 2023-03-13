@@ -107,6 +107,7 @@
         "vector": "cpp",
         "random": "cpp",
         "condition_variable": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "version": "cpp"
     }
 }
