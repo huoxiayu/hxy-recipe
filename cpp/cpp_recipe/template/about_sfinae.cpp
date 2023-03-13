@@ -1,4 +1,5 @@
 #include <iostream>
+#include <type_traits>
 
 using namespace std;
 
@@ -45,9 +46,27 @@ void go() {
 
 } // namespace case2
 
+namespace case3 {
+
+struct Biz {
+    Biz(int a, int b, bool c) {}
+};
+
+template <typename T, typename... Args,
+          typename = decltype(T(std::declval<Args>()...))>
+static constexpr std::true_type can_construct_by(int);
+
+void go() {
+    cout << typeid(decltype(can_construct_by<Biz, int, int, bool>(0))).name()
+         << endl;
+    cout << typeid(std::true_type).name() << endl;
+}
+
+} // namespace case3
+
 int main() {
     case1::go();
     case2::go();
-
+    case3::go();
     return 0;
 }
