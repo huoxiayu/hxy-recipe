@@ -112,6 +112,8 @@
         "optional": "cpp",
         "array": "cpp",
         "iomanip": "cpp",
-        "sstream": "cpp"
-    }
+        "sstream": "cpp",
+        "regex": "cpp"
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/build_recipes/cmake/01_hello_cmake"
 }
