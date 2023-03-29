@@ -12,6 +12,12 @@ import java.util.List;
 public class QuickStart {
 
     public static void main(String[] args) {
+        int len = 10;
+        float[] f = new float[len];
+        for (int i = 0; i < len; i++) {
+            System.out.println("f[" + i + "]: " + f[i]);
+        }
+
         List<Bean> beanList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             beanList.add(new Bean(i, i));

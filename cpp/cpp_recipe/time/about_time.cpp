@@ -1,9 +1,9 @@
 #include <chrono>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <typeinfo>
-#include <sstream>
-#include <iomanip>
 using namespace std;
 
 using ull = unsigned long long;
@@ -42,7 +42,7 @@ void about_pretty_time_print() {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+    ss << std::put_time(std::localtime(&in_time_t), "%Y%m%d%H%M%S");
     string pretty_time = ss.str();
     cout << pretty_time << endl;
 }
