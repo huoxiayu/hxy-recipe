@@ -5,7 +5,9 @@ package com.hxy.recipe.allocator;
 public class SlabAllocator {
 
     public static void main(String[] args) {
+        System.out.println("begin");
 
+        System.out.println("end");
     }
 
 }
