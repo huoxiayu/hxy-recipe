@@ -26,17 +26,16 @@ public class ConcurrentLinkedQueueAndBlockingQueue {
     private static final int TOTAL_SIZE = SIZE * PARALLEL;
 
     public static void main(String[] args) {
-        run(false);
-        run(false);
-        run(false);
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            log.info("times -> {}", i);
+            run(i == n - 1);
+            try {
+                TimeUnit.SECONDS.sleep(5L);
+            } catch (InterruptedException ignore) {
 
-        try {
-            TimeUnit.SECONDS.sleep(5L);
-        } catch (InterruptedException ignore) {
-
+            }
         }
-
-        run(true);
     }
 
     private static void run(boolean flag) {
